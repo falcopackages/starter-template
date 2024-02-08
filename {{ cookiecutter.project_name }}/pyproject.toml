@@ -81,6 +81,9 @@ cov = ["test-cov", "cov-report"]
 [tool.falco]
 htmx = "{{ cookiecutter.project_name }}/static/vendors/htmx/htmx.min.js"
 
+[tool.falco.crud]
+utils-path = "{{ cookiecutter.project_name }}/core"
+
 [tool.falco.work]
 server = "python manage.py migrate && python manage.py runserver"
 tailwind = "python manage.py tailwind watch"
