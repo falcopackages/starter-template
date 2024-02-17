@@ -45,7 +45,7 @@ dependencies = [
 ]
 
 [tool.django-stubs]
-django_settings_module = "config.settings"
+django_settings_module = "{{ cookiecutter.project_name }}.settings"
 
 [tool.djlint]
 blank_line_after_tag = "load,extends"

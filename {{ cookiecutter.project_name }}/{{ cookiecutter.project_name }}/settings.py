@@ -34,7 +34,7 @@ DEBUG = env.bool("DEBUG", default=False)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"] if DEBUG else ["localhost"])
 
-ASGI_APPLICATION = "config.asgi.application"
+ASGI_APPLICATION = "{{ cookiecutter.project_name }}.asgi.application"
 
 # Load cache from CACHE_URL or REDIS_URL
 if "CACHE_URL" in os.environ:
@@ -187,7 +187,7 @@ if DEBUG:
         "debug_toolbar.middleware.DebugToolbarMiddleware",
     )
 
-ROOT_URLCONF = "config.urls"
+ROOT_URLCONF = "{{ cookiecutter.project_name }}.urls"
 
 SECRET_KEY = env("SECRET_KEY", default="{{ cookiecutter.secret_key }}")
 
@@ -257,7 +257,7 @@ USE_I18N = False
 
 USE_TZ = True
 
-WSGI_APPLICATION = "config.wsgi.application"
+WSGI_APPLICATION = "{{ cookiecutter.project_name }}.wsgi.application"
 
 # 2. Django Contrib Settings
 # -----------------------------------------------------------------------------------------------
