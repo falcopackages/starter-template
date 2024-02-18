@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Generate a project
-        run: falco start-project test-project -b falco_blueprint_basic
+        run: falco start-project test-project -b ./falco_blueprint_basic
 
       - name: Install hatch
         run: |
