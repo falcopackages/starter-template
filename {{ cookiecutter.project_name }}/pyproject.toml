@@ -150,7 +150,7 @@ module = "*.migrations.*"
 ignore_errors = true
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "config.settings"
+DJANGO_SETTINGS_MODULE = "{{ cookiecutter.project_name }}.settings"
 addopts = "--reuse-db -n auto"
 norecursedirs = ".* bin build dist *.egg htmlcov logs node_modules static templates venv"
 python_files = "tests.py test_*.py *_tests.py"

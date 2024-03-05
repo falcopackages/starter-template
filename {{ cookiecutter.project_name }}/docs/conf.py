@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath(".."))
 # -- Django setup -----------------------------------------------------------
 # This is required to import Django code in Sphinx using autodoc.
 
-os.environ["DJANGO_SETTINGS_MODULE"] = "config.settings"
+os.environ["DJANGO_SETTINGS_MODULE"] = "{{ cookiecutter.project_name }}.settings"
 django.setup()
 
 # -- Project information -----------------------------------------------------
