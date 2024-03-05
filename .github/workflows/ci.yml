@@ -30,6 +30,9 @@ jobs:
         run: falco start-project test-project -b /home/runner/work/falco_blueprint_basic/falco_blueprint_basic --skip-new-version-check
         working-directory: ./
 
+      - name: Debugging with ssh
+        uses: lhotari/action-upterm@v1
+
       - name: Install hatch
         run: |
           pip install hatch
