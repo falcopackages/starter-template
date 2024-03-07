@@ -20,7 +20,8 @@ FROM python-base as builder-base
 # Install dependencies
 WORKDIR $PYSETUP_PATH
 COPY ./requirements.txt ./
-RUN python -m venv $VENV_PATH && pip install -r requirements.txt
+RUN pip install --upgrade pip uv
+RUN python -m uv venv $VENV_PATH && uv pip install -r requirements.txt
 
 # Install s6-overlay
 RUN apt-get update && apt-get install -y xz-utils
