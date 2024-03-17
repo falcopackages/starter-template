@@ -1,0 +1,25 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+jobs:
+  deploy-to-caprover:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    if: {% raw %}${{ github.event.workflow_run.conclusion == 'success' }}{% endraw %}
+    steps:
+      - uses: adamghill/build-docker-and-deploy-to-caprover@main
+        with:
+          github-token: {% raw %}${{ secrets.GITHUB_TOKEN }}{% endraw %}
+          caprover-app-name: {{ cookiecutter.project_name }}
+          caprover-server-url: {% raw %}${{ secrets.CAPROVER_SERVER_URL }}{% endraw %}
+          caprover-app-token: {% raw %}${{ secrets.CAPROVER_APP_TOKEN }}{% endraw %}
+          docker-file-name: deploy/Dockerfile
+  
