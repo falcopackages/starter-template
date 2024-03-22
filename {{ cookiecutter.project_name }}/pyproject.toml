@@ -115,7 +115,8 @@ dependencies = [
     "pytest-django",
     "pytest-sugar",
     "pytest-xdist",
-    "falco-cli"
+    "falco-cli",
+    "pywatchman",
 ]
 lock-filename = "requirements-dev.txt"
 
