@@ -150,8 +150,22 @@ warn_unused_configs = true
 plugins = ["mypy_django_plugin.main"]
 
 [[tool.mypy.overrides]]
-module = "*.migrations.*"
 ignore_errors = true
+module = [
+  "allauth.*",
+  "boto3.*",
+  "botocore.*",
+  "debug_toolbar.*",
+  "django_filters.*",
+  "django_q.*",
+  "djclick.*",
+  "gunicorn.*",
+  "health_check.*",
+  "*.migrations.*"
+]
+
+[tool.mypy_django_plugin]
+ignore_missing_model_attributes = true
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "{{ cookiecutter.project_name }}.settings"
