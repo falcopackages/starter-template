@@ -14,6 +14,7 @@ from django.views.decorators.http import require_GET
 
 ONE_DAY = 60 * 60 * 24
 
+
 @require_GET
 @cache_control(max_age=ONE_DAY, immutable=True, public=True)
 def robots_txt(request: HttpRequest) -> HttpResponse:
