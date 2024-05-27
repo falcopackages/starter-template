@@ -6,6 +6,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+     <meta name="htmx-config" content='{"globalViewTransitions": "true"}' />
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <meta name="description" content="" />
     <meta name="keywords" content="" />
@@ -14,7 +15,6 @@
     {% block css %}
     {% endblock css %}
     <script defer src="{% static 'vendors/htmx/htmx.min.js' %}"></script>
-    {% django_htmx_script %}
     {% block javascript %}
     {% endblock javascript %}
   </head>
@@ -36,6 +36,7 @@
       
     {% block inline_javascript %}
     {% endblock inline_javascript %}
+    {% django_htmx_script %}
   </body>
 </html>
 {% endraw %}
