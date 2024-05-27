@@ -11,7 +11,6 @@ from django.utils import timezone
 from django.views.decorators.cache import cache_control
 from django.views.decorators.http import require_GET
 
-
 ONE_DAY = 60 * 60 * 24
 
 
@@ -48,13 +47,3 @@ def favicon(request: HttpRequest) -> HttpResponse | FileResponse:
         ),
         content_type="image/svg+xml",
     )
-
-
-@require_GET
-def home(request: HttpRequest) -> HttpResponse:
-    return render(request, "core/home.html", context={})
-
-
-@require_GET
-def about(request: HttpRequest) -> HttpResponse:
-    return render(request, "core/about.html", context={})

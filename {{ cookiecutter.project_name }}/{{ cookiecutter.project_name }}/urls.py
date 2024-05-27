@@ -6,10 +6,15 @@ from django.urls import path
 from django.views import defaults as default_views
 from {{ cookiecutter.project_name }}.core import views as core_views
 from health_check.views import MainView
+from django.views.generic import TemplateView
 
 urlpatterns = [
-    path("", core_views.home, name="home"),
-    path("about/", core_views.about, name="about"),
+    path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
+    path(
+        "about/",
+        TemplateView.as_view(template_name="pages/about.html"),
+        name="about",
+    ),
     path(".well-known/security.txt", core_views.security_txt),
     path("robots.txt", core_views.robots_txt),
     path("android-chrome-192x192.png", core_views.favicon),

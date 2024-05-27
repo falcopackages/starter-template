@@ -10,7 +10,7 @@
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <meta name="description" content="" />
     <meta name="keywords" content="" />
-    {% endraw %}<title>{{ cookiecutter.project_name }}</title>{% raw %}
+    {% block title %}{% endraw %}<title>{{ cookiecutter.project_name | title }}</title>{% raw %}{% endblock title %}
     {% tailwind_css %}
     {% block css %}
     {% endblock css %}
@@ -19,21 +19,12 @@
     {% endblock javascript %}
   </head>
   <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-
-    {% block header %}
-    {% endblock header %}
-
-    <main class="container mx-auto"> 
+    <main class="container mx-auto">
       {% block content %}
       {% endblock content %}
     </main>
-
-    {% block footer %}
-    {% endblock footer %}
-
     {% block modal %}
     {% endblock modal %}
-      
     {% block inline_javascript %}
     {% endblock inline_javascript %}
     {% django_htmx_script %}
