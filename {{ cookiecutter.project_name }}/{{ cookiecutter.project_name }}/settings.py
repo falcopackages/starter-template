@@ -219,13 +219,9 @@ STORAGES = {
         "BACKEND": "storages.backends.s3.S3Storage",
         "OPTIONS": {
             "access_key": env.str("AWS_ACCESS_KEY_ID", default=None),
-            "addressing_style": env.str("AWS_S3_ADDRESSING_STYLE", default="virtual"),
             "bucket_name": env.str("AWS_STORAGE_BUCKET_NAME", default=None),
-            "custom_domain": env.str("AWS_S3_CUSTOM_DOMAIN", default=None),
-            "endpoint_url": env.url("AWS_S3_ENDPOINT_URL", default=None).geturl(),
             "region_name": env.str("AWS_S3_REGION_NAME", default=None),
             "secret_key": env.str("AWS_SECRET_ACCESS_KEY", default=None),
-            "signature_version": env.str("AWS_S3_SIGNATURE_VERSION", default="s3v4"),
         },
     },
     "staticfiles": {
