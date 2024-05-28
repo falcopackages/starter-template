@@ -25,34 +25,38 @@ APPS_DIR = BASE_DIR / "{{ cookiecutter.project_name }}"
 env = Env()
 env.read_env(Path(BASE_DIR, ".env").as_posix())
 
-
 # We should strive to only have two possible runtime scenarios: either `DEBUG`
 # is True or it is False. `DEBUG` should be only true in development, and
 # False when deployed, whether or not it's a production environment.
 DEBUG = env.bool("DEBUG", default=False)
 
-
 # 1. Django Core Settings
 # -----------------------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/4.0/ref/settings/
 
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"] if DEBUG else ["localhost"], subcast=str)
+ALLOWED_HOSTS = env.list(
+    "ALLOWED_HOSTS", default=["*"] if DEBUG else ["localhost"], subcast=str
+)
 
 ASGI_APPLICATION = "{{ cookiecutter.project_name }}.asgi.application"
 
-# Load cache from CACHE_URL or REDIS_URL
-if "CACHE_URL" in os.environ:
-    CACHES = {"default": env.dj_cache_url("CACHE_URL")}
-elif "REDIS_URL" in os.environ:
-    CACHES = {"default": env.dj_cache_url("REDIS_URL")}
+# https://grantjenks.com/docs/diskcache/tutorial.html#djangocache
+if "CACHE_LOCATION" in os.environ:
+    CACHES = {
+        "default": {
+            "BACKEND": "diskcache.DjangoCache",
+            "LOCATION": env.str("CACHE_LOCATION"),
+            "TIMEOUT": 300,
+            "SHARDS": 8,
+            "DATABASE_TIMEOUT": 0.010,  # 10 milliseconds
+            "OPTIONS": {"size_limit": 2**30},  # 1 gigabyte
+        }
+    }
 
 CSRF_COOKIE_SECURE = not DEBUG
 
 DATABASES = {
-    "default": env.dj_db_url(
-        "DATABASE_URL",
-        default="sqlite:///db.sqlite3"
-    ),
+    "default": env.dj_db_url("DATABASE_URL", default="sqlite:///db.sqlite3"),
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
@@ -154,7 +158,9 @@ LOGGING = {
         },
         "{{ cookiecutter.project_name }}": {
             "handlers": ["stdout"],
-            "level": env.log_level("{{ cookiecutter.project_name | upper }}_LOG_LEVEL", default="INFO"),
+            "level": env.log_level(
+                "{{ cookiecutter.project_name | upper }}_LOG_LEVEL", default="INFO"
+            ),
         },
     },
 }
@@ -210,7 +216,11 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 SECURE_SSL_REDIRECT = not DEBUG
 
-SERVER_EMAIL = env.str("SERVER_EMAIL", default=DEFAULT_FROM_EMAIL, validate=lambda v: Email()(parseaddr(v)[1]))
+SERVER_EMAIL = env.str(
+    "SERVER_EMAIL",
+    default=DEFAULT_FROM_EMAIL,
+    validate=lambda v: Email()(parseaddr(v)[1]),
+)
 
 SESSION_COOKIE_SECURE = not DEBUG
 
@@ -244,9 +254,7 @@ CACHED_LOADERS = [("django.template.loaders.cached.Loader", DEFAULT_LOADERS)]
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [
-            str(APPS_DIR / "templates")
-        ],
+        "DIRS": [str(APPS_DIR / "templates")],
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -254,7 +262,10 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
-            "builtins": ["template_partials.templatetags.partials", "heroicons.templatetags.heroicons"],
+            "builtins": [
+                "template_partials.templatetags.partials",
+                "heroicons.templatetags.heroicons",
+            ],
             "debug": DEBUG,
             "loaders": [
                 (
@@ -307,9 +318,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STATIC_URL = "/static/"
 
-STATICFILES_DIRS = [
-    APPS_DIR / "static"
-]
+STATICFILES_DIRS = [APPS_DIR / "static"]
 
 # 3. Third Party Settings
 # -------------------------------------------------------------------------------------------------
@@ -370,12 +379,15 @@ Q_CLUSTER = {
     "orm": "default",
 }
 
-
 # sentry
 if (SENTRY_DSN := env.url("SENTRY_DSN", default=None)).scheme and not DEBUG:
     sentry_sdk.init(
         dsn=SENTRY_DSN.geturl(),
-        environment=env.str("SENTRY_ENV", default="development", validate=OneOf(["development", "production"])),
+        environment=env.str(
+            "SENTRY_ENV",
+            default="development",
+            validate=OneOf(["development", "production"]),
+        ),
         integrations=[
             DjangoIntegration(),
             LoggingIntegration(event_level=None, level=None),
