@@ -60,7 +60,7 @@ coverage-report: test
 
 # Run the django deployment checks
 @deploy-checks:
-    just manage check --deploy
+    just dj check --deploy
 
 # ----------------------------------------------------------------------
 # DJANGO
@@ -71,7 +71,7 @@ coverage-report: test
     just cmd falco {{ COMMAND }}
 
 # Run a django management command
-@manage *COMMAND:
+@dj *COMMAND:
     just cmd python -m manage {{ COMMAND }}
 
 # Run the django development server
@@ -80,31 +80,31 @@ coverage-report: test
 
 # Open a Django shell using django-extensions shell_plus command
 @shell:
-    just manage shell_plus
+    just dj shell_plus
 
 alias mm := makemigrations
 
 # Generate Django migrations
 @makemigrations *APPS:
-    just manage makemigrations {{ APPS }}
+    just dj makemigrations {{ APPS }}
 
 # Run Django migrations
 @migrate *ARGS:
-    just manage migrate {{ ARGS }}
+    just dj migrate {{ ARGS }}
 
 # Reset the database
 @reset-db:
-    just manage reset_db --noinput
+    just dj reset_db --noinput
 
 alias su := createsuperuser
 
 # Quickly create a superuser with the provided credentials
 createsuperuser EMAIL="admin@localhost" PASSWORD="admin":
-    @export DJANGO_SUPERUSER_PASSWORD='{{ PASSWORD }}' && just manage createsuperuser --noinput --email "{{ EMAIL }}"
+    @export DJANGO_SUPERUSER_PASSWORD='{{ PASSWORD }}' && just dj createsuperuser --noinput --email "{{ EMAIL }}"
 
 # Generate admin code for a django app
 @admin APP:
-    just manage admin_generator {{ APP }} | tail -n +2 > {% endraw %}{{ cookiecutter.project_name }}{% raw %}/{{ APP }}/admin.py
+    just dj admin_generator {{ APP }} | tail -n +2 > {% endraw %}{{ cookiecutter.project_name }}{% raw %}/{{ APP }}/admin.py
 
 # ----------------------------------------------------------------------
 # DOCS
