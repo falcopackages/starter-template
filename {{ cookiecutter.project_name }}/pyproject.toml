@@ -118,6 +118,7 @@ dependencies = [
     "falco-cli",
     "django-watchfiles",
     "git-cliff",
+    "bump-my-version",
 ]
 lock-filename = "requirements-dev.txt"
 
@@ -173,6 +174,31 @@ extend-ignore = ["TID252", "RUF012", "TRY003", "EM101", "I001", "I002"]
 "*/migrations/*" = ["E501"]
 "tests/**/*" = ["PLR2004", "S101", "TID252", "ARG001"]
 "docs/conf.py" = ["INP001", "A001"]
+
+[tool.bumpversion]
+current_version = "0.0.1"
+parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)"
+serialize = [
+  "{major}.{minor}.{patch}",
+]
+search = "{current_version}"
+replace = "{new_version}"
+regex = false
+ignore_missing_version = false
+ignore_missing_files = false
+tag = true
+sign_tags = false
+tag_name = "v{new_version}"
+tag_message = "Bump version: {current_version} → {new_version}"
+allow_dirty = false
+commit = true
+message = "Bump version: {current_version} → {new_version}"
+commit_args = "--no-verify"
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'
 
 [tool.git-cliff.changelog]
 header = {% raw %}"""

@@ -145,4 +145,13 @@ docs-upgrade:
 # Run pre-commit on all files
 @lint:
     just cmd pre-commit run --all-files
+
+# Bump project version and update changelog
+@bumpver version:
+    just cmd bump-my-version bump {{ version }}
+    git cliff --output CHANGELOG.md
+    git add -A
+    git commit --amend --no-edit
+    git push
+    git push --tags
 {% endraw %}
