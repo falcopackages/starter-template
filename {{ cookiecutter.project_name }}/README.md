@@ -15,6 +15,7 @@
 ### Setup project
 
 Ensure that the Python version specified in your `.pre-commit-config.yaml` file aligns with the Python version installed on your system.
+If this is a newly created project, run `git init` first.
 
 ```shell
 just setup
