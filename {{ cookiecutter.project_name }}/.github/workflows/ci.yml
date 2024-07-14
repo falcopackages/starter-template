@@ -29,7 +29,7 @@ jobs:
         uses: pypa/hatch@install
       - name: Install just
         uses: extractions/setup-just@v2
-      - name: Run mypy
+      - name: Run type checking
         run: just types
 
   checks:
