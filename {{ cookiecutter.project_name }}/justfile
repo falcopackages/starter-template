@@ -17,7 +17,6 @@ _default:
 
 # Setup local environnment (maybe install hatch and setup postgres (create database, etc..))
 @setup:
-    just clean
     just bootstrap
     just cmd pre-commit install --install-hooks
     just migrate
