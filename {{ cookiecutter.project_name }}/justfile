@@ -1,5 +1,4 @@
-{% raw %}
-set dotenv-load := true
+{% raw %}set dotenv-load := true
 
 # List all available commands
 _default:
