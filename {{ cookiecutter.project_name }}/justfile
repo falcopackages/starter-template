@@ -2,7 +2,7 @@
 
 # List all available commands
 _default:
-    @just --list
+    @just --list --unsorted
 
 # ----------------------------------------------------------------------
 # DEPENDENCIES
