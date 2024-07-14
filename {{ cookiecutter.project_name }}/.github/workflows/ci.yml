@@ -18,72 +18,53 @@ concurrency:
 jobs:
   types:
     runs-on: ubuntu-latest
-    env:
-      DEBUG: True
     steps:
       - name: Checkout Code Repository
         uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-          cache: pip
-          cache-dependency-path: |
-            requirements.txt
-      - name: Install hatch
-        run: |
-          pip install hatch
+          python-version: '3.12'
+      - name: Install Hatch
+        uses: pypa/hatch@install
+      - name: Install just
+        uses: extractions/setup-just@v2
       - name: Run mypy
-        run: |
-          hatch run mypy .
+        run: just types
 
   checks:
     runs-on: ubuntu-latest
-    env:
-      AWS_ACCESS_KEY_ID: ""
-      AWS_SECRET_ACCESS_KEY: ""
-      AWS_S3_REGION_NAME: ""
     steps:
       - name: Checkout Code Repository
         uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-          cache: pip
-          cache-dependency-path: |
-            requirements.txt
-      - name: Install hatch
-        run: |
-          pip install hatch
+          python-version: '3.12'
+      - name: Install Hatch
+        uses: pypa/hatch@install
+      - name: Install just
+        uses: extractions/setup-just@v2
       - name: Run deployment checks
-        run: |
-          hatch run python manage.py check --deploy
+        run: just deploy-checks
 
-  pytest:
+  test:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:15
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_PASSWORD: postgres
-    env:
-      DATABASE_URL: "postgres://postgres:postgres@localhost:5432/postgres"
-      DEBUG: True
     steps:
       - name: Checkout Code Repository
         uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-          cache: pip
-          cache-dependency-path: |
-            requirements.txt
-      - name: Install hatch
+          python-version: '3.12'
+      - name: Install Hatch
+        uses: pypa/hatch@install
+      - name: Install just
+        uses: extractions/setup-just@v2
+      - name: Build staticfiles
         run: |
-          pip install hatch
+          just manage tailwind --skip-checks build
+          just manage collectstatic --no-input --skip-checks
+          just manage compress
       - name: Test with pytest
-        run: hatch run test:test
+        run: just test

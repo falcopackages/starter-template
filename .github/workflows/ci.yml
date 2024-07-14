@@ -3,73 +3,53 @@ name: CI
 on:
   pull_request:
     branches: ['master', 'main']
-
   push:
     branches: ['master', 'main']
-
   workflow_dispatch:
 
 jobs:
   create-project:
     runs-on: ubuntu-latest
-
     steps:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
       - name: Install falco
-        run: |
-          pip install falco-cli --pre
-
+        run: pip install falco-cli --pre
       - name: Checkout Code Repository
         uses: actions/checkout@v4
-
       # - name: Debugging with ssh
       #   uses: lhotari/action-upterm@v1
-
       - name: Generate a project
         run: falco start-project test-project -b . --skip-new-version-check
         working-directory: ./
-
-      - name: Install hatch
-        run: |
-          pip install hatch
-
+      - name: Install Hatch
+        uses: pypa/hatch@install
+      - name: Install just
+        uses: extractions/setup-just@v2
       - name: Run django checks
-        run: |
-          cd test_project && hatch run python manage.py check --fail-level WARNING
+        run: test_project && just manage check --fail-level WARNING
 
   build-image:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code Repository
         uses: actions/checkout@v4
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3.0.0
-
       - name: Install falco
-        run: |
-          pip install falco-cli --pre
-
-      - name: Install hatch
-        run: |
-          pip install hatch
-
+        run: pip install falco-cli --pre
       - name: Generate a project
         run: falco start-project test-project -b . --skip-new-version-check
         working-directory: ./
-
+      - name: Install Hatch
+        uses: pypa/hatch@install
+      - name: Install just
+        uses: extractions/setup-just@v2
       - name: Generate requirements.txt
-        run: |
-          cd test_project
-          hatch run python --version
-
+        run: cd test_project && just bootstrap
       - name: Build image
-        run: |
-          cd test_project
-          docker build . -f deploy/Dockerfile
+        run: cd test_project && docker build . -f deploy/Dockerfile
 
 

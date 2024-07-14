@@ -7,40 +7,26 @@
 ## Prerequisites
 
 - `Python 3.11+`
-- `hatch 1.9.1+`
+- [hatch 1.9.1+](https://hatch.pypa.io/latest/)
+- [just](https://github.com/casey/just)
 
 ## Development
 
-### Create a new virtual environment
-
-```shell
-hatch shell
-```
-
-### Install pre-commit
-
-```shell
-git init && pre-commit install
-```
+### Setup project
 
 Ensure that the Python version specified in your `.pre-commit-config.yaml` file aligns with the Python version installed on your system.
 
-### Apply migrations
-
 ```shell
-hatch run migrate
+just setup
 ```
-
-### Create a superuser
-
-Follow the tip described [here](https://falco.oluwatobi.dev/guides/tips_and_extra.html#create-superuser-from-environment-variables) and execute the command below to create a superuser.
-
-```shell
-python manage.py createsuperuser --no-input
-```
+Read the content of the justfile to understand what this command does. Essentially, it sets up your virtual environment, 
+installs the dependencies, runs migrations, and creates a superuser with the credentials `admin@localhost` (email) and `admin` (password).
 
 ### Run the django development server
 
 ```shell
-falco work
+just server
 ```
+
+> [!TIP]
+> Run `just` to see all available commands.

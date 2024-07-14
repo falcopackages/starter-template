@@ -1,19 +1,150 @@
+{% raw %}
+set dotenv-load := true
 
+# List all available commands
+_default:
+    @just --list
 
-#[tool.hatch.envs.default.scripts]
-#runserver = ["migrate", "python manage.py tailwind runserver {args}"]
-#migrate = "python manage.py migrate {args}"
-#makemigrations = "python manage.py makemigrations {args}"
-#reset-db = "python manage.py reset_db --noinput"
-#shell = "python manage.py shell_plus {args}"
-#upgrade-deps = ["rm requirements.txt", "hatch env run --env default -- python --version"]
+# ----------------------------------------------------------------------
+# DEPENDENCIES
+# ----------------------------------------------------------------------
 
-#[tool.hatch.envs.test.scripts]
-#test = "pytest {args:tests}"
-#test-cov = "coverage run -m pytest {args:tests}"
-#cov-report = ["- coverage combine", "coverage report"]
-#cov = ["test-cov", "cov-report"]
+# Bootstrap local development environment
+@bootstrap:
+    hatch env create
+    hatch env create dev
+    hatch env create docs
+    just install
 
+# Setup local environnment (maybe install hatch and setup postgres (create database, etc..))
+@setup:
+    just clean
+    just bootstrap
+    just cmd pre-commit install --install-hooks
+    just migrate
+    just createsuperuser
+    just lint
 
-#[tool.hatch.envs.docs.scripts]
-#serve = "sphinx-autobuild docs docs/_build/html --port 8001"
+# Install dependencies
+@install *ARGS:
+    just cmd python --version
+
+# Generate and upgrade dependencies
+@upgrade:
+    just cmd hatch-pip-compile --upgrade
+    just cmd hatch-pip-compile dev --upgrade
+
+# Clean up local development environment
+@clean:
+    hatch env prune
+    rm -f .coverage.*
+
+# ----------------------------------------------------------------------
+# TESTING/TYPES
+# ----------------------------------------------------------------------
+
+# Run the test suite, generate code coverage, and export html report
+@coverage-html: test
+    rm -rf htmlcov
+    @just cmd python -m coverage html --skip-covered --skip-empty
+
+# Run the test suite, generate code coverage, and print report to stdout
+coverage-report: test
+    @just cmd python -m coverage report
+
+# Run tests using pytest
+@test *ARGS:
+    just cmd coverage run -m pytest {{ ARGS }}
+
+# Run mypy on project
+@types:
+    just cmd python -m mypy .
+
+# Run the django deployment checks
+@deploy-checks:
+    just manage check --deploy
+
+# ----------------------------------------------------------------------
+# DJANGO
+# ----------------------------------------------------------------------
+
+# Run a falco command
+@falco *COMMAND:
+    just cmd falco {{ COMMAND }}
+
+# Run a django management command
+@manage *COMMAND:
+    just cmd python -m manage {{ COMMAND }}
+
+# Run the django development server
+@server:
+    just falco work
+
+# Open a Django shell using django-extensions shell_plus command
+@shell:
+    just manage shell_plus
+
+alias mm := makemigrations
+
+# Generate Django migrations
+@makemigrations *APPS:
+    just manage makemigrations {{ APPS }}
+
+# Run Django migrations
+@migrate *ARGS:
+    just manage migrate {{ ARGS }}
+
+# Reset the database
+@reset-db:
+    just manage reset_db --noinput
+
+alias su := createsuperuser
+
+# Quickly create a superuser with the provided credentials
+createsuperuser EMAIL="admin@localhost" PASSWORD="admin":
+    @export DJANGO_SUPERUSER_PASSWORD='{{ PASSWORD }}' && just manage createsuperuser --noinput --email "{{ EMAIL }}"
+
+# Generate admin code for a django app
+@admin APP:
+    just manage admin_generator {{ APP }} | tail -n +2 > {% endraw %}{{ cookiecutter.project_name }}{% raw %}/{{ APP }}/admin.py
+
+# ----------------------------------------------------------------------
+# DOCS
+# ----------------------------------------------------------------------
+
+# Build documentation using Sphinx
+@docs-build LOCATION="docs/_build/html":
+    sphinx-build docs {{ LOCATION }}
+
+# Install documentation dependencies
+@docs-install:
+    hatch run docs:python --version
+
+# Serve documentation locally
+@docs-serve:
+    hatch run docs:sphinx-autobuild docs docs/_build/html --port 8001
+
+# Generate and upgrade documentation dependencies
+docs-upgrade:
+    just cmd hatch-pip-compile dev --upgrade
+
+# ----------------------------------------------------------------------
+# UTILS
+# ----------------------------------------------------------------------
+
+# Run a command within the dev environnment
+@cmd *ARGS:
+    hatch --env dev run {{ ARGS }}
+
+# Run all formatters
+@fmt:
+    just --fmt --unstable
+    hatch fmt --formatter
+    just cmd pre-commit run pyproject-fmt -a
+    just cmd pre-commit run reorder-python-imports -a
+    just cmd pre-commit run djlint-reformat-django -a
+
+# Run pre-commit on all files
+@lint:
+    just cmd pre-commit run --all-files
+{% endraw %}
