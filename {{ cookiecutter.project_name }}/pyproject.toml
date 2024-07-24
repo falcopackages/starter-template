@@ -21,7 +21,7 @@ dependencies = [
   "django-allauth",
   "django-anymail[amazon-ses]",
   "django-storages[s3]",
-  "django-compresso",
+  "django-compressor",
   "django-tailwind-cli",
   "django-template-partials",
   "django-lifecycle",
