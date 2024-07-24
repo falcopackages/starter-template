@@ -1,6 +1,7 @@
 {% raw %}{% load static %}
 {% load django_htmx %}
 {% load tailwind_cli %}
+  {% load compress %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -12,11 +13,15 @@
     <meta name="keywords" content="" />
     {% block title %}{% endraw %}<title>{{ cookiecutter.project_name | title }}</title>{% raw %}{% endblock title %}
     {% tailwind_css %}
-    {% block css %}
-    {% endblock css %}
+    {% compress css %}
+      {% block css %}
+      {% endblock css %}
+    {% endcompress css %}
     <script defer src="{% static 'vendors/htmx/htmx.min.js' %}"></script>
-    {% block javascript %}
-    {% endblock javascript %}
+    {% compress js %}
+      {% block javascript %}
+      {% endblock javascript %}
+    {% endcompress js %}
   </head>
   <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     <main class="container mx-auto">
