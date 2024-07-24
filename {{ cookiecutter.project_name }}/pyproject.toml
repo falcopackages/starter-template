@@ -21,8 +21,6 @@ dependencies = [
   "django-allauth",
   "django-anymail[amazon-ses]",
   "django-storages[s3]",
-  "django-browser-reload",
-  "django-debug-toolbar",
   "django-tailwind-cli",
   "django-template-partials",
   "django-lifecycle",
