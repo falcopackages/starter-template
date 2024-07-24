@@ -106,6 +106,7 @@ THIRD_PARTY_APPS = [
     "health_check.storage",
     "health_check.contrib.migrations",
     "heroicons",
+    "compressor",
     "django_extensions",
 ]
 
@@ -322,6 +323,12 @@ STATIC_URL = "/static/"
 
 STATICFILES_DIRS = [APPS_DIR / "static"]
 
+STATICFILES_FINDERS = (
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    "compressor.finders.CompressorFinder",
+)
+
 # 3. Third Party Settings
 # -------------------------------------------------------------------------------------------------
 
@@ -357,6 +364,9 @@ if not DEBUG:
             "region_name": env.str("AWS_S3_REGION_NAME", default=None),
         }
     }
+
+# django-compressor
+COMPRESS_OFFLINE = not DEBUG
 
 # django-crispy-forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
