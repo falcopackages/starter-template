@@ -92,6 +92,19 @@ requires = [
   "hatch-pip-compile>=1.11.2"
 ]
 
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+exclude = [
+  "static",
+]
+artifacts = [
+  "staticfiles",
+]
+
+[tool.hatch.build.targets.binary]
+
 [[tool.hatch.envs.all.matrix]]
 python = ["3.11", "3.12"]
 

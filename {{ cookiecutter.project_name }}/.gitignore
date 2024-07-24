@@ -62,6 +62,7 @@ local_settings.py
 *.sqlite3-journal
 *.db
 *.db-journal
+*staticfiles/
 
 # db dumps
 *.dump

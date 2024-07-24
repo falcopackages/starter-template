@@ -317,7 +317,7 @@ if DEBUG:
 AUTH_USER_MODEL = "users.User"
 
 # django.contrib.staticfiles
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = APPS_DIR / "staticfiles"
 
 STATIC_URL = "/static/"
 

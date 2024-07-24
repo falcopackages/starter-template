@@ -43,7 +43,7 @@ FROM python-base as production
 
 COPY --from=builder-base /s6-install /
 COPY --from=builder-base $VENV_PATH $VENV_PATH
-COPY --from=builder-base /app/staticfiles /app/staticfiles
+COPY --from=builder-base /app/{{ cookiecutter.project_name }}/staticfiles /app/{{ cookiecutter.project_name }}/staticfiles
 COPY deploy/etc  /etc
 COPY {{ cookiecutter.project_name }} /app/{{ cookiecutter.project_name }}
 COPY manage.py /app/manage.py

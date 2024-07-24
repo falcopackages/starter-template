@@ -130,6 +130,26 @@ docs-upgrade:
 # UTILS
 # ----------------------------------------------------------------------
 
+# Build a binary distribution of the project using hatch / pyapp
+buildbin:
+    #!/usr/bin/env sh
+    export DEBUG="False"
+    just manage tailwind build
+    just manage collectstatic --no-input --skip-checks
+    just manage compress
+    current_version=$(hatch version)
+    hatch build
+    export PYAPP_UV_ENABLED="1"
+    export PYAPP_PYTHON_VERSION="3.12"
+    export PYAPP_FULL_ISOLATION="1"
+    export PYAPP_EXPOSE_METADATA="1"
+    export PYAPP_PROJECT_NAME="{{ cookiecutter.project_name }}"
+    export PYAPP_PROJECT_VERSION="${current_version}"
+    export PYAPP_PROJECT_PATH="$(ls ${PWD}/dist/{% endraw %}{{ cookiecutter.project_name }}{% raw %}-${current_version}-py3-none-any.whl)"
+    export PYAPP_DISTRIBUTION_EMBED="1"
+    hatch build -t binary
+    chmod +x dist/binary/{% endraw %}{{ cookiecutter.project_name }}{% raw %}-${current_version}
+
 # Run a command within the dev environnment
 @cmd *ARGS:
     hatch --env dev run {{ ARGS }}
