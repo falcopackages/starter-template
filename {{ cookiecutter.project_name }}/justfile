@@ -136,7 +136,6 @@ buildbin:
     export DEBUG="False"
     just manage tailwind build
     just manage collectstatic --no-input --skip-checks
-    just manage compress
     current_version=$(hatch version)
     hatch build
     export PYAPP_UV_ENABLED="1"
