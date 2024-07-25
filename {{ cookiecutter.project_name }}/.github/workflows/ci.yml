@@ -21,14 +21,18 @@ jobs:
     steps:
       - name: Checkout Code Repository
         uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
       - name: Install Hatch
         uses: pypa/hatch@install
+
       - name: Install just
         uses: extractions/setup-just@v2
+
       - name: Run type checking
         run: just types
 
@@ -37,14 +41,18 @@ jobs:
     steps:
       - name: Checkout Code Repository
         uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
       - name: Install Hatch
         uses: pypa/hatch@install
+
       - name: Install just
         uses: extractions/setup-just@v2
+
       - name: Run deployment checks
         run: just deploy-checks
 
@@ -53,14 +61,18 @@ jobs:
     steps:
       - name: Checkout Code Repository
         uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
       - name: Install Hatch
         uses: pypa/hatch@install
+
       - name: Install just
         uses: extractions/setup-just@v2
+
       - name: Build staticfiles
         run: |
           just dj tailwind --skip-checks build

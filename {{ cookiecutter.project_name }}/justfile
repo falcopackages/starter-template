@@ -130,25 +130,30 @@ docs-upgrade:
 # UTILS
 # ----------------------------------------------------------------------
 
-# Build a binary distribution of the project using hatch / pyapp
-buildbin:
+# Build a wheel distribution of the project using hatch
+buildwheel:
     #!/usr/bin/env sh
     export DEBUG="False"
     just manage tailwind build
     just manage collectstatic --no-input --skip-checks
     just manage compress
-    current_version=$(hatch version)
     hatch build
+
+# Build a binary distribution of the project using hatch / pyapp
+buildbin:
+    #!/usr/bin/env sh
+    current_version=$(hatch version)
+    wheel_path="${PWD}/dist/{% endraw %}{{ cookiecutter.project_name }}{% raw %}-${current_version}-py3-none-any.whl"
+    [ -f "$wheel_path" ] || { echo "Wheel file does not exist. Please build the wheel first using the 'buildwheel' recipe."; exit 1; }
     export PYAPP_UV_ENABLED="1"
     export PYAPP_PYTHON_VERSION="3.12"
     export PYAPP_FULL_ISOLATION="1"
     export PYAPP_EXPOSE_METADATA="1"
     export PYAPP_PROJECT_NAME="{% endraw %}{{ cookiecutter.project_name }}{% raw %}"
     export PYAPP_PROJECT_VERSION="${current_version}"
-    export PYAPP_PROJECT_PATH="$(ls ${PWD}/dist/{% endraw %}{{ cookiecutter.project_name }}{% raw %}-${current_version}-py3-none-any.whl)"
+    export PYAPP_PROJECT_PATH="${wheel_path}"
     export PYAPP_DISTRIBUTION_EMBED="1"
     hatch build -t binary
-    chmod +x dist/binary/{% endraw %}{{ cookiecutter.project_name }}{% raw %}-${current_version}
 
 # Run a command within the dev environnment
 @cmd *ARGS:
