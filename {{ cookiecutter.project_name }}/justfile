@@ -134,9 +134,9 @@ docs-upgrade:
 buildwheel:
     #!/usr/bin/env sh
     export DEBUG="False"
-    just manage tailwind build
-    just manage collectstatic --no-input --skip-checks
-    just manage compress
+    just dj tailwind build
+    just dj collectstatic --no-input --skip-checks
+    just dj compress
     hatch build
 
 # Build a binary distribution of the project using hatch / pyapp
