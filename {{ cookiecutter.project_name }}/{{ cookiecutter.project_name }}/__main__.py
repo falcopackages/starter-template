@@ -34,6 +34,8 @@ def run_manage(argv: list) -> None:
 def run_gunicorn(argv: list) -> None:
     """Run the web server."""
     argv.append("{{ cookiecutter.project_name }}.wsgi:application")
+    argv.append("--config")
+    argv.append("gunicorn.conf.py")
     wsgiapp.run()
 
 
