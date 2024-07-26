@@ -36,7 +36,7 @@ dependencies = [
   "environs[django]",
   "falco-app",
   "heroicons[django]",
-  "gunicorn",
+  "granian",
   "boto3",
   "crispy-tailwind",
   "Pillow",
