@@ -1,4 +1,4 @@
 #!/command/with-contenv execlineb
 
 cd /app
-python {{ cookiecutter.project_name }}/__main__.py qlcuster
+python {{ cookiecutter.project_name }}/__main__.py qcluster
