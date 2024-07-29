@@ -1,5 +1,4 @@
 #!/command/with-contenv execlineb
 
 cd /app
-foreground { python manage.py createsuperuser --noinput }
 python {{ cookiecutter.project_name }}/__main__.py

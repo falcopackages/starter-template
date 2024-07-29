@@ -1,5 +1,4 @@
 #!/command/with-contenv execlineb
 
 cd /app
-foreground { python manage.py setup_periodic_tasks }
-python manage.py qcluster
+python {{ cookiecutter.project_name }}/__main__.py qlcuster

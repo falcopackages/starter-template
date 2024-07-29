@@ -1,1 +1,1 @@
-/etc/s6-overlay/scripts/db-prepare.sh
+cd app && python {{ cookiecutter.project_name }}/__main__.py setup

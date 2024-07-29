@@ -34,7 +34,7 @@ def run_manage(argv: list) -> None:
     execute_from_command_line(argv[1:])
 
 
-def run_gunicorn(argv) -> None:
+def run_gunicorn(argv: list) -> None:
     """
     Run gunicorn the wsgi server.
     https://docs.gunicorn.org/en/stable/settings.html
@@ -62,7 +62,17 @@ def run_gunicorn(argv) -> None:
     wsgiapp.run()
 
 
-COMMANDS = {"qcluster": run_qcluster, "manage": run_manage}
+def run_setup(_):
+    """Run some project setup tasks"""
+    from django.core.management import execute_from_command_line
+
+    execute_from_command_line(["manage.py", "migrate"])
+    execute_from_command_line(["manage.py", "createsuperuser", "--noinput"])
+    execute_from_command_line(["manage.py", "setup_periodic_tasks"])
+
+
+
+COMMANDS = {"qcluster": run_qcluster, "manage": run_manage, "setup": run_setup}
 
 
 if __name__ == "__main__":
