@@ -1,1 +1,4 @@
-cd app && python {{ cookiecutter.project_name }}/__main__.py setup
+#!/command/with-contenv execlineb
+
+cd /app
+python {{ cookiecutter.project_name }}/__main__.py setup
