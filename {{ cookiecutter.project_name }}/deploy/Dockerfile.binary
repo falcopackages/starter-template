@@ -1,0 +1,64 @@
+ARG PYTHON_BUILDER_IMAGE=3.12
+
+## ---------------------------------------------------------------------------------- ##
+## ------------------------- Python base -------------------------------------------- ##
+## ---------------------------------------------------------------------------------- ##
+FROM python:latest as python-base
+ENV PIP_DEFAULT_TIMEOUT=100 \
+  PIP_DISABLE_PIP_VERSION_CHECK=1 \
+  PIP_NO_CACHE_DIR=1 \
+  PIP_ROOT_USER_ACTION=ignore \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PYTHONUNBUFFERED=1 \
+  PYTHONFAULTHANDLER=1 \
+  PYTHONHASHSEED=random \
+  LANG=C.UTF-8 \
+  LC_ALL=C.UTF-8
+RUN apt update \
+  && apt upgrade -y \
+  && apt install -y --no-install-recommends git tini \
+  && apt-get autoremove -y \
+  && apt-get clean -y \
+  && rm -rf /root/.cache \
+  && rm -rf /var/apt/lists/* \
+  && rm -rf /var/cache/apt/* \
+  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false\
+  && mkdir -p /workspace/app \
+  && pip install --quiet -U pip wheel setuptools virtualenv
+
+
+## ---------------------------------------------------------------------------------- ##
+## ------------------------- Python build base -------------------------------------- ##
+## ---------------------------------------------------------------------------------- ##
+FROM python-base
+# ARG PDM_INSTALL_ARGS=""
+# ENV PDM_INSTALL_ARGS="${PDM_INSTALL_ARGS}" \
+#   GRPC_PYTHON_BUILD_WITH_CYTHON=1 \
+#   PATH="/workspace/app/.venv/bin:/usr/local/bin:$PATH"
+## -------------------------- add build packages ----------------------------------- ##
+RUN apt-get install -y --no-install-recommends build-essential curl \
+  && apt-get autoremove -y \
+  && apt-get clean -y \
+  && rm -rf /root/.cache \
+  && rm -rf /var/apt/lists/* \
+  && rm -rf /var/cache/apt/* \
+  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false
+
+
+# Install hatch
+# RUN curl https://raw.githubusercontent.com/litestar-org/pytest-databases/main/scripts/install-hatch.sh | sh
+ADD https://github.com/pypa/hatch/releases/latest/download/hatch-x86_64-unknown-linux-gnu.tar.gz /tmp
+RUN tar -C /usr/local/bin -xzf /tmp/hatch-x86_64-unknown-linux-gnu.tar.gz
+
+# Install the rust toolchain
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+RUN cargo install just
+
+## -------------------------- install application ----------------------------------- ##
+WORKDIR /workspace/app
+COPY . .
+RUN just bootstrap
+RUN just build-wheel
+RUN just build-bin
