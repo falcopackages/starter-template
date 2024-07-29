@@ -1,4 +1,1 @@
-#!/command/with-contenv execlineb
-
-cd /app
-python {{ cookiecutter.project_name }}/__main__.py setup
+/etc/s6-overlay/scripts/setup.sh
