@@ -196,4 +196,12 @@ build-bin:
     export PYAPP_PROJECT_PATH="${wheel_path}"
     export PYAPP_DISTRIBUTION_EMBED="1"
     hatch build -t binary
+
+# Build binary in docker
+build-bin-docker:
+    mkdir dist || true
+    docker build -t build-bin-container . -f deploy/Dockerfile.binary
+    docker run -d --name final-build build-bin-container sh -c "sleep 1000"
+    docker cp final-build:/app/dist .
+    docker rm -f final-build
 {% endraw %}
