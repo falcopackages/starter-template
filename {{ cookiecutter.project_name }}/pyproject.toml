@@ -101,7 +101,6 @@ exclude = [
 ]
 artifacts = [
   "staticfiles",
-  "media",
 ]
 
 [tool.hatch.build.targets.binary]
