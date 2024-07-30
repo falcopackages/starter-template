@@ -1,9 +1,11 @@
 def main() -> None:
-    from pathlib import Path
     import os
     import sys
+    from pathlib import Path
 
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "{{ cookiecutter.project_name }}.settings")
+    os.environ.setdefault(
+        "DJANGO_SETTINGS_MODULE", "{{ cookiecutter.project_name }}.settings"
+    )
     current_path = Path(__file__).parent.parent.resolve()
     sys.path.append(str(current_path))
 
@@ -27,7 +29,9 @@ def run_setup(_):
     execute_from_command_line(["manage", "setup_periodic_tasks"])
 
     with suppress(CommandError):
-        execute_from_command_line(["manage", "createsuperuser", "--noinput", "--traceback"])
+        execute_from_command_line(
+            ["manage", "createsuperuser", "--noinput", "--traceback"]
+        )
 
 
 def run_gunicorn(argv: list) -> None:

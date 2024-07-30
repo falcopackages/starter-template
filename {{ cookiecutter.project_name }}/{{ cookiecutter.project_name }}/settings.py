@@ -168,7 +168,7 @@ LOGGING = {
     },
 }
 
-MEDIA_ROOT = APPS_DIR / "media"
+MEDIA_ROOT = env.str("MEDIA_ROOT", default=str(APPS_DIR / "media"))
 
 MEDIA_URL = "/media/"
 
