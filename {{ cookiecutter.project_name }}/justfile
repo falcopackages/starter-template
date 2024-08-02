@@ -45,6 +45,10 @@ _default:
 @cmd *ARGS:
     hatch --env dev run {{ ARGS }}
 
+# Get the full path of a hatch environment
+@env-path ENV="dev":
+    hatch env find {{ ENV }}
+
 # ----------------------------------------------------------------------
 # TESTING/TYPES
 # ----------------------------------------------------------------------
