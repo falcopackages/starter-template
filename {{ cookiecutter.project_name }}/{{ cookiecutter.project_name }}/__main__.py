@@ -1,7 +1,7 @@
 def main() -> None:
-    from pathlib import Path
     import os
     import sys
+    from pathlib import Path
 
     os.environ.setdefault(
         "DJANGO_SETTINGS_MODULE", "{{ cookiecutter.project_name }}.settings"
@@ -25,6 +25,17 @@ def run_setup(_):
     from django.core.management.base import CommandError
     from contextlib import suppress
 
+    execute_from_command_line(["manage", "litestream", "init"])
+    execute_from_command_line(
+        [
+            "manage",
+            "litestream",
+            "restore",
+            "default",
+            "-if-replica-exists",
+            "-if-db-not-exists",
+        ]
+    )
     execute_from_command_line(["manage", "migrate"])
     execute_from_command_line(["manage", "setup_periodic_tasks"])
 
@@ -64,6 +75,13 @@ def run_gunicorn(argv: list) -> None:
     wsgiapp.run()
 
 
+def run_litestream(argv: list) -> None:
+    """Run Litestream via django-litestream."""
+    from django.core.management import execute_from_command_line
+
+    execute_from_command_line(["manage", "litestream", *argv[2:]])
+
+
 def run_qcluster(argv: list) -> None:
     """Run Django-q cluster."""
     from django.core.management import execute_from_command_line
@@ -78,8 +96,12 @@ def run_manage(argv: list) -> None:
     execute_from_command_line(argv[1:])
 
 
-COMMANDS = {"qcluster": run_qcluster, "manage": run_manage, "setup": run_setup}
-
+COMMANDS = {
+    "qcluster": run_qcluster,
+    "manage": run_manage,
+    "setup": run_setup,
+    "litestream": run_litestream,
+}
 
 if __name__ == "__main__":
     main()
