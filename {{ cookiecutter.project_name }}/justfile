@@ -18,14 +18,14 @@ _default:
 # Setup local environnment (maybe install hatch and setup postgres (create database, etc..))
 @setup:
     just bootstrap
-    just cmd pre-commit install --install-hooks
+    just run pre-commit install --install-hooks
     just migrate
     just createsuperuser
     just lint > /dev/null 2>&1 || true
 
 # Install dependencies
 @install:
-    just cmd python --version
+    just run python --version
 
 # Install hatch
 @install-hatch:
@@ -33,8 +33,8 @@ _default:
 
 # Generate and upgrade dependencies
 @upgrade:
-    just cmd hatch-pip-compile --upgrade
-    just cmd hatch-pip-compile dev --upgrade
+    just run hatch-pip-compile --upgrade
+    just run hatch-pip-compile dev --upgrade
 
 # Clean up local development environment
 @clean:
@@ -46,7 +46,7 @@ _default:
 # ----------------------------------------------------------------------
 
 # Run a command within the dev environnment
-@cmd *ARGS:
+@run *ARGS:
     hatch --env dev run {{ ARGS }}
 
 # Get the full path of a hatch environment
@@ -60,19 +60,19 @@ _default:
 # Run the test suite, generate code coverage, and export html report
 @coverage-html: test
     rm -rf htmlcov
-    @just cmd python -m coverage html --skip-covered --skip-empty
+    @just run python -m coverage html --skip-covered --skip-empty
 
 # Run the test suite, generate code coverage, and print report to stdout
 coverage-report: test
-    @just cmd python -m coverage report
+    @just run python -m coverage report
 
 # Run tests using pytest
 @test *ARGS:
-    just cmd coverage run -m pytest {{ ARGS }}
+    just run coverage run -m pytest {{ ARGS }}
 
 # Run mypy on project
 @types:
-    just cmd python -m mypy .
+    just run python -m mypy .
 
 # Run the django deployment checks
 @deploy-checks:
@@ -84,11 +84,11 @@ coverage-report: test
 
 # Run a falco command
 @falco *COMMAND:
-    just cmd falco {{ COMMAND }}
+    just run falco {{ COMMAND }}
 
 # Run a django management command
 @dj *COMMAND:
-    just cmd python -m manage {{ COMMAND }}
+    just run python -m manage {{ COMMAND }}
 
 # Run the django development server
 @server ADDRESS="":
@@ -140,7 +140,7 @@ createsuperuser EMAIL="admin@localhost" PASSWORD="admin":
 
 # Generate and upgrade documentation dependencies
 docs-upgrade:
-    just cmd hatch-pip-compile dev --upgrade
+    just run hatch-pip-compile dev --upgrade
 
 # ----------------------------------------------------------------------
 # LINTING / FORMATTING
@@ -150,9 +150,9 @@ docs-upgrade:
 @fmt:
     just --fmt --unstable
     hatch fmt --formatter
-    just cmd pre-commit run pyproject-fmt -a
-    just cmd pre-commit run reorder-python-imports -a
-    just cmd pre-commit run djlint-reformat-django -a
+    just run pre-commit run pyproject-fmt -a
+    just run pre-commit run reorder-python-imports -a
+    just run pre-commit run djlint-reformat-django -a
 
 # Run pre-commit on all files
 @lint:
@@ -165,8 +165,8 @@ docs-upgrade:
 # Bump project version and update changelog
 bumpver VERSION:
     #!/usr/bin/env sh
-    just cmd bump-my-version bump {{ VERSION }}
-    just cmd git-cliff --output CHANGELOG.md
+    just run bump-my-version bump {{ VERSION }}
+    just run git-cliff --output CHANGELOG.md
 
     if [ -z "$(git status --porcelain)" ]; then
         echo "No changes to commit."
