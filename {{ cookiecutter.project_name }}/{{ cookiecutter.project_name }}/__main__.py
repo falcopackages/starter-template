@@ -45,10 +45,6 @@ def run_gunicorn(argv: list) -> None:
 
     workers = multiprocessing.cpu_count() * 2 + 1
     gunicorn_args = [
-        "{{ cookiecutter.project_name }}.wsgi:application",
-        "--bind",
-        "0.0.0.0:8000",
-        # "unix:/run/{{ cookiecutter.project_name }}.gunicorn.sock", # uncomment this line and comment the line above to use a socket file
         "--max-requests",
         "1000",
         "--max-requests-jitter",
@@ -59,6 +55,7 @@ def run_gunicorn(argv: list) -> None:
         "-",
         "--error-logfile",
         "-",
+        "{{ cookiecutter.project_name }}.wsgi:application",
     ]
     argv.extend(gunicorn_args)
     wsgiapp.run()
