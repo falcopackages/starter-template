@@ -42,6 +42,7 @@ dependencies = [
   "psycopg[binary]",
   "sentry-sdk",
   "whitenoise",
+  "refreshcss",
 ]
 
 [tool.django-stubs]
