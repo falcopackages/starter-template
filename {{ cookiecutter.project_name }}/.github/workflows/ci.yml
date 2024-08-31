@@ -74,9 +74,6 @@ jobs:
         uses: extractions/setup-just@v2
 
       - name: Build staticfiles
-        run: |
-          just dj tailwind --skip-checks build
-          just dj collectstatic --no-input --skip-checks
-          just dj compress
+        run: just collectstatic
       - name: Test with pytest
         run: just test
