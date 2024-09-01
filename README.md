@@ -1,6 +1,6 @@
 # falco blueprint basic
 
-[![CI](https://github.com/Tobi-De/falco_blueprint_basic/actions/workflows/ci.yml/badge.svg)](https://github.com/Tobi-De/falco_blueprint_basic/actions/workflows/ci.yml)
+[![CI](https://github.com/Tobi-De/falco_tailwind/actions/workflows/ci.yml/badge.svg)](https://github.com/Tobi-De/falco_tailwind/actions/workflows/ci.yml)
 
 Project blueprint for https://github.com/Tobi-De/falco, run with:
 
