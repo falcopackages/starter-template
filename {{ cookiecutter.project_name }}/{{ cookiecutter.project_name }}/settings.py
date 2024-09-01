@@ -313,8 +313,6 @@ AUTH_PASSWORD_VALIDATORS = [
 if DEBUG:
     AUTH_PASSWORD_VALIDATORS = []
 
-AUTH_USER_MODEL = "users.User"
-
 # django.contrib.staticfiles
 STATIC_ROOT = APPS_DIR / "staticfiles"
 
