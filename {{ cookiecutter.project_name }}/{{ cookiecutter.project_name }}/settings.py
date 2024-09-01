@@ -107,6 +107,7 @@ THIRD_PARTY_APPS = [
     "health_check.contrib.migrations",
     "heroicons",
     "compressor",
+    "unique_user_email",
     "django_extensions",
 ]
 
