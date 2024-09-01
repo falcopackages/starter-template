@@ -116,7 +116,12 @@ alias su := createsuperuser
 
 # Quickly create a superuser with the provided credentials
 createsuperuser EMAIL="admin@localhost" PASSWORD="admin":
-    @export DJANGO_SUPERUSER_PASSWORD='{{ PASSWORD }}' && just dj createsuperuser --noinput --email "{{ EMAIL }}"
+    #!/usr/bin/env bash
+    set -euo pipefail
+    email="{{ EMAIL }}"
+    export DJANGO_SUPERUSER_PASSWORD='{{ PASSWORD }}'
+    export DJANGO_SUPERUSER_USERNAME="${email%%@*}"
+    just dj createsuperuser --noinput --email "{{ EMAIL }}"
 
 # Generate admin code for a django app
 @admin APP:

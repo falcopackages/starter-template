@@ -112,7 +112,6 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "{{ cookiecutter.project_name }}.core",
-    "{{ cookiecutter.project_name }}.users",
 ]
 
 if DEBUG:
@@ -339,8 +338,6 @@ ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http" if DEBUG else "https"
 
 ACCOUNT_EMAIL_REQUIRED = True
 
-ACCOUNT_FORMS = {"signup": "{{ cookiecutter.project_name }}.users.forms.UserSignupForm"}
-
 ACCOUNT_LOGOUT_REDIRECT_URL = "account_login"
 
 ACCOUNT_SESSION_REMEMBER = True
@@ -348,8 +345,6 @@ ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
 
 ACCOUNT_UNIQUE_EMAIL = True
-
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 
 ACCOUNT_USERNAME_REQUIRED = False
 
