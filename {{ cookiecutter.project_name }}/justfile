@@ -223,4 +223,16 @@ build-bin-docker:
     docker run -it -v "${PWD}:/app" -w /app --name final-build build-bin-container just build-wheel && just build-bin
     docker cp final-build:/app/dist .
     docker rm -f final-build
+
+
+# Build docker image
+build-docker-image:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    current_version=$(hatch version)
+    image_name="{% endraw %}{{ cookiecutter.project_name }}{% raw %}"
+    just install
+    docker build -t "${image_name}:${current_version}" -f deploy/Dockerfile .
+    docker tag "${image_name}:${current_version}" "${image_name}:latest"
+    echo "Built docker image ${image_name}:${current_version}"
 {% endraw %}
