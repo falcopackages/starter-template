@@ -12,8 +12,8 @@ from marshmallow.validate import OneOf
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
-from {{ cookiecutter.project_name }}.core.sentry import sentry_profiles_sampler
-from {{ cookiecutter.project_name }}.core.sentry import sentry_traces_sampler
+from falco_toolbox.sentry import sentry_profiles_sampler
+from falco_toolbox.sentry import sentry_traces_sampler
 
 # 0. Setup
 # --------------------------------------------------------------------------------------------
@@ -93,22 +93,24 @@ THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "compressor",
     "crispy_forms",
     "crispy_tailwind",
+    "django_extensions",
     "django_htmx",
-    "template_partials",
-    "django_tailwind_cli",
     "django_q",
     "django_q_registry",
+    "django_tailwind_cli",
+    "falco_ui.favicons",
+    "falco_toolbox",
     "health_check",
-    "health_check.db",
     "health_check.cache",
-    "health_check.storage",
     "health_check.contrib.migrations",
+    "health_check.db",
+    "health_check.storage",
     "heroicons",
-    "compressor",
+    "template_partials",
     "unique_user_email",
-    "django_extensions",
 ]
 
 LOCAL_APPS = [
