@@ -4,11 +4,14 @@ from django.contrib import admin
 from django.urls import include
 from django.urls import path
 from django.views import defaults as default_views
+from falco_toolbox import views as toolbox_views
 from health_check.views import MainView
 from django.views.generic import TemplateView
 
 urlpatterns = [
-    path("", include("{{ cookiecutter.project_name }}.core.urls")),
+    path(".well-known/security.txt", toolbox_views.security_txt),
+    path("robots.txt", toolbox_views.robots_txt),
+    path("", include("falco_ui.favicons.urls")),
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
     path(
         "about/",
