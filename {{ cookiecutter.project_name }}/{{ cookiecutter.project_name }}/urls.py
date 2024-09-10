@@ -4,9 +4,13 @@ from django.contrib import admin
 from django.urls import include
 from django.urls import path
 from django.views import defaults as default_views
+from django.views.generic import TemplateView
 from falco_toolbox import views as toolbox_views
 from health_check.views import MainView
-from django.views.generic import TemplateView
+from allauth.account.decorators import secure_admin_login
+
+admin.autodiscover()
+admin.site.login = secure_admin_login(admin.site.login)
 
 urlpatterns = [
     path(".well-known/security.txt", toolbox_views.security_txt),
