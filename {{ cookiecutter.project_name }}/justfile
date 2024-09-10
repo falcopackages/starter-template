@@ -16,7 +16,9 @@ _default:
     just install
 
 # Setup local environnment (maybe install hatch and setup postgres (create database, etc..))
-@setup:
+setup:
+    #!/usr/bin/env bash
+    [ ! -d .git ] && git init && git add -A
     just bootstrap
     just run pre-commit install --install-hooks
     just migrate
