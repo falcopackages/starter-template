@@ -1,4 +1,4 @@
 #!/command/with-contenv execlineb
 
 cd /app
-exec python {{ cookiecutter.project_name }}/__main__.py  --bind 0.0.0.0:8000
+exec python {{ cookiecutter.project_name }}/__main__.py
