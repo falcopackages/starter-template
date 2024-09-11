@@ -11,6 +11,7 @@ Group=www-data
 RuntimeDirectory=gunicorn
 WorkingDirectory=/home/{{ cookiecutter.username }}/{{ cookiecutter.project_name }}
 ExecStart=/home/{{ cookiecutter.username }}/{{ cookiecutter.project_name }}/{{ cookiecutter.project_name }} --bind unix:/run/{{ cookiecutter.project_name }}.sock
+EnvironmentFile=/home/{{ cookiecutter.username }}/{{ cookiecutter.project_name }}/.env
 ExecReload=/bin/kill -s HUP $MAINPID
 KillMode=mixed
 TimeoutStopSec=5
