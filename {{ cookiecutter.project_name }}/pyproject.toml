@@ -127,6 +127,7 @@ dependencies = [
     "django-stubs[compatible-mypy]",
     "django-fastdev",
     "coverage[toml]>=6.5",
+    "fabric",
     "pre-commit",
     "pytest",
     "pytest-django",
