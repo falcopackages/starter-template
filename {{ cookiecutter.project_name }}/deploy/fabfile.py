@@ -202,3 +202,22 @@ def logs(_, follow=False):
     get_connection().sudo(
         f"sudo journalctl -u {PROJECT_NAME} -r {'-f' if follow else ''}"
     )
+
+
+if __name__ == "__main__":
+    from fabric.main import Program, Collection
+
+    ns = Collection(
+        provision,
+        up,
+        deploy,
+        refresh,
+        setup_domain,
+        transfer_files,
+        apprun,
+        console,
+        reload_services,
+        logs,
+    )
+    program = Program(namespace=ns)
+    program.run()
