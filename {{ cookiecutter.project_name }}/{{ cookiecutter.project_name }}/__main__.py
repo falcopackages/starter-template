@@ -35,10 +35,21 @@ def run_setup(_):
 
 
 def run_gunicorn(argv: list) -> None:
-    import os
+    import sys
+    import subprocess
+    from pathlib import Path
 
-    argv.extend(["-c", "{{ cookiecutter.project_name }}/gunicorn.conf.py", "{{ cookiecutter.project_name }}.wsgi"])
-    os.execvp("gunicorn", argv)
+    bin_dir = Path(sys.executable).parent
+
+    argv = argv[1:]
+    argv.extend(
+        [
+            "-c",
+            "{{ cookiecutter.project_name }}/gunicorn.py",
+            "{{ cookiecutter.project_name }}.wsgi",
+        ]
+    )
+    subprocess.run([bin_dir / "gunicorn", *argv], check=False)
 
 
 def run_qcluster(argv: list) -> None:

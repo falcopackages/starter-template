@@ -1,12 +1,10 @@
-"""
-Fabric deployment file for the Blaze project.
-This file contains tasks for server provisioning, deployment, and maintenance.
-"""
-
 import os
 import secrets
-from fabric import Connection, task
-from falco.fabutils import with_progress, curl_binary_download_cmd
+
+from fabric import Connection
+from fabric import task
+from falco.fabutils import curl_binary_download_cmd
+from falco.fabutils import with_progress
 
 # Configuration
 PROJECT_NAME = "{{ cookiecutter.project_name }}"
@@ -34,7 +32,7 @@ def get_connection(use_root=False):
 
 @task
 @with_progress("Provisioning server")
-def provision(c, set_password=False, progress=None):
+def provision(_, set_password=False, progress=None):
     """Set up the server with necessary dependencies and create a new user."""
     conn = get_connection(use_root=True)
 
@@ -112,7 +110,7 @@ def refresh(c, progress=None):
 
 @task
 @with_progress("Setting up domain with SSL")
-def setup_domain(c, progress=None):
+def setup_domain(_, progress=None):
     """Set up a domain with SSL using Certbot."""
     conn = get_connection()
 
@@ -136,7 +134,7 @@ def setup_domain(c, progress=None):
 
 
 @task
-def transfer_files(c, code_only=False):
+def transfer_files(_, code_only=False):
     """Transfer project files to the server."""
     conn = get_connection()
 
@@ -171,7 +169,7 @@ def transfer_files(c, code_only=False):
 
 
 @task
-def apprun(c, cmd, pty=False):
+def apprun(_, cmd, pty=False):
     """Run a command in the application environment."""
     with get_connection().cd(SERVER_PROJECT_DIR):
         get_connection().run(f"source .env && ./{PROJECT_NAME} '{cmd}'", pty=pty)
@@ -190,7 +188,7 @@ def console(c, shell_type="bash"):
 
 
 @task
-def reload_services(c):
+def reload_services(_):
     """Reload Nginx and systemd configurations, and restart the project service."""
     conn = get_connection()
     conn.sudo("systemctl daemon-reload")
@@ -199,6 +197,8 @@ def reload_services(c):
 
 
 @task
-def logs(c, lines=50):
+def logs(_, follow=False):
     """View the last n lines of the project's log file."""
-    get_connection().run(f"tail -n {lines} /var/log/{PROJECT_NAME}/gunicorn.log")
+    get_connection().sudo(
+        f"sudo journalctl -u {PROJECT_NAME} -r {'-f' if follow else ''}"
+    )
