@@ -24,11 +24,11 @@ repos:
         args:
           - "--application-directories={{ cookiecutter.project_name }}"
 
-  - repo: https://github.com/Riverside-Healthcare/djLint
-    rev: v1.35.2
+  - repo: https://github.com/adamchainz/djade-pre-commit
+    rev: "1.1.1"
     hooks:
-      - id: djlint-reformat-django
-      - id: djlint-django
+    -   id: djade
+        args: [--target-version, "5.0"]
 
   - repo: https://github.com/adamchainz/django-upgrade
     rev: "1.21.0"

@@ -165,7 +165,7 @@ docs-upgrade:
     hatch fmt --formatter
     just run pre-commit run pyproject-fmt -a  > /dev/null 2>&1 || true
     just run pre-commit run reorder-python-imports -a  > /dev/null 2>&1 || true
-    just run pre-commit run djlint-reformat-django -a  > /dev/null 2>&1 || true
+    just run pre-commit run djade -a  > /dev/null 2>&1 || true
 
 # Run pre-commit on all files
 @lint:
