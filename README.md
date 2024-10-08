@@ -1,8 +1,8 @@
-# falco blueprint basic
+# Starter Template
 
-[![CI](https://github.com/Tobi-De/falco_tailwind/actions/workflows/ci.yml/badge.svg)](https://github.com/Tobi-De/falco_tailwind/actions/workflows/ci.yml)
+[![CI](https://github.com/falcopackages/starter-template/actions/workflows/ci.yml/badge.svg)](https://github.com/falcopackages/starter-template/actions/workflows/ci.yml)
 
-Project blueprint for https://github.com/Tobi-De/falco, run with:
+Starter template for falco project, run with:
 
 ```shell
 pip install falco-cli
