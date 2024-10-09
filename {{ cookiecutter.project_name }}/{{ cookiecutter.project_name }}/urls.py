@@ -3,7 +3,6 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include
 from django.urls import path
-from django.views import defaults as default_views
 from django.views.generic import TemplateView
 from falco import views as falco_views
 from falco.urls import errors_views
@@ -16,7 +15,7 @@ admin.site.login = secure_admin_login(admin.site.login)
 urlpatterns = [
     path(".well-known/security.txt", falco_views.security_txt),
     path("robots.txt", falco_views.robots_txt),
-    path("", include("falco.favicons.urls")),
+    path("", include("falco_ui.urls")),
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
     path(
         "about/",
