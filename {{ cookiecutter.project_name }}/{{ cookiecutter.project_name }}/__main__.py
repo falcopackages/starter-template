@@ -4,7 +4,6 @@ import multiprocessing
 import subprocess
 from pathlib import Path
 from contextlib import suppress
-from falco.manage import main, register
 
 HOST = "0.0.0.0"
 PORT = 8000
@@ -17,7 +16,13 @@ sys.path.append(str(current_path))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", f"{PROJECT_NAME}.settings")
 
 
-@register("setup")
+def main():
+    command_key = sys.argv[1] if len(sys.argv) > 1 else None
+    run_func = COMMANDS.get(command_key) or "granian"  # run granian by default
+
+    run_func(sys.argv)
+
+
 def run_setup(_):
     """
     Run project setup tasks, applying migrations, creating a superuser if needed etc.
@@ -44,7 +49,6 @@ def run_setup(_):
         )
 
 
-@register("granian")
 def run_granian(_):
     """
     Run Granian, the WSGI server. If using SQLite as the database, Litestream is used for replication.
@@ -76,7 +80,6 @@ def run_granian(_):
     subprocess.run(command, check=True)
 
 
-@register("qcluster")
 def run_qcluster(argv):
     """
     Run the Django Q cluster for handling background tasks.
@@ -86,5 +89,21 @@ def run_qcluster(argv):
     execute_from_command_line(["manage", "qcluster", *argv[2:]])
 
 
+def run_manage(argv):
+    """
+    Run Django's manage.py commands.
+    """
+    from django.core.management import execute_from_command_line
+
+    execute_from_command_line(argv[1:])
+
+
+COMMANDS = {
+    "manage": run_manage,
+    "setup": run_setup,
+    "granian": run_granian,
+    "qcluster": run_qcluster,
+}
+
 if __name__ == "__main__":
-    main(default_command="granian")
+    main()
