@@ -45,7 +45,6 @@ dependencies = [
   "sentry-sdk",
   "whitenoise",
   "refreshcss",
-  "litestream-bin",
 ]
 
 scripts.{{ cookiecutter.project_name }} = "{{ cookiecutter.project_name }}.__main__:main"
