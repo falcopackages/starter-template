@@ -3,8 +3,8 @@ import sys
 import multiprocessing
 import subprocess
 from pathlib import Path
-from typing import List
 from contextlib import suppress
+from falco.manage import main, register
 
 HOST = "0.0.0.0"
 PORT = 8000
@@ -17,20 +17,7 @@ sys.path.append(str(current_path))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", f"{PROJECT_NAME}.settings")
 
 
-def main():
-    """
-    Entry point of the script. Determines which command to execute based on CLI arguments.
-    """
-    # Retrieve the command key from the first CLI argument, if present
-    command_key = sys.argv[1] if len(sys.argv) > 1 else None
-    run_func = COMMANDS.get(command_key)
-
-    if run_func:
-        run_func(sys.argv)
-    else:
-        run_granian(sys.argv)
-
-
+@register("setup")
 def run_setup(_):
     """
     Run project setup tasks, applying migrations, creating a superuser if needed etc.
@@ -57,6 +44,7 @@ def run_setup(_):
         )
 
 
+@register("granian")
 def run_granian(_):
     """
     Run Granian, the WSGI server. If using SQLite as the database, Litestream is used for replication.
@@ -88,7 +76,8 @@ def run_granian(_):
     subprocess.run(command, check=True)
 
 
-def run_qcluster(argv: List[str]) -> None:
+@register("qcluster")
+def run_qcluster(argv) -> None:
     """
     Run the Django Q cluster for handling background tasks.
     """
@@ -97,20 +86,5 @@ def run_qcluster(argv: List[str]) -> None:
     execute_from_command_line(["manage", "qcluster", *argv[2:]])
 
 
-def run_manage(argv: List[str]) -> None:
-    """
-    Run Django's manage.py commands.
-    """
-    from django.core.management import execute_from_command_line
-
-    execute_from_command_line(argv[1:])
-
-
-COMMANDS = {
-    "qcluster": run_qcluster,
-    "manage": run_manage,
-    "setup": run_setup,
-}
-
 if __name__ == "__main__":
-    main()
+    main(default_command="granian")
