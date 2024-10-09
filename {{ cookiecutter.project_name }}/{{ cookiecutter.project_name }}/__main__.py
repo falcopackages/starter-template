@@ -77,7 +77,7 @@ def run_granian(_):
 
 
 @register("qcluster")
-def run_qcluster(argv) -> None:
+def run_qcluster(argv):
     """
     Run the Django Q cluster for handling background tasks.
     """

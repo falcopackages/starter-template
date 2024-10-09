@@ -30,6 +30,8 @@ env.read_env(Path(BASE_DIR, ".env").as_posix())
 # False when deployed, whether or not it's a production environment.
 DEBUG = env.bool("DEBUG", default=False)
 
+PROD = not DEBUG
+
 # 1. Django Core Settings
 # -----------------------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/4.0/ref/settings/
@@ -53,12 +55,12 @@ if "CACHE_LOCATION" in os.environ:
         }
     }
 
-CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = PROD
 
 DATABASES = {
     "default": env.dj_db_url("DATABASE_URL", default="sqlite:///db.sqlite3"),
 }
-if not DEBUG:
+if PROD:
     if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
         # https://blog.pecar.me/sqlite-django-config
         # https://blog.pecar.me/sqlite-prod
@@ -221,9 +223,9 @@ ROOT_URLCONF = "{{ cookiecutter.project_name }}.urls"
 
 SECRET_KEY = env.str("SECRET_KEY", default="{{ cookiecutter.secret_key }}")
 
-SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_INCLUDE_SUBDOMAINS = PROD
 
-SECURE_HSTS_PRELOAD = not DEBUG
+SECURE_HSTS_PRELOAD = PROD
 
 # https://docs.djangoproject.com/en/dev/ref/middleware/#http-strict-transport-security
 # 2 minutes to start with, will increase as HSTS is tested
@@ -233,7 +235,7 @@ SECURE_HSTS_SECONDS = 0 if DEBUG else env.int("SECURE_HSTS_SECONDS", default=60 
 # https://noumenal.es/notes/til/django/csrf-trusted-origins/
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-SECURE_SSL_REDIRECT = not DEBUG
+SECURE_SSL_REDIRECT = PROD
 
 SERVER_EMAIL = env.str(
     "SERVER_EMAIL",
@@ -241,7 +243,7 @@ SERVER_EMAIL = env.str(
     validate=lambda v: Email()(parseaddr(v)[1]),
 )
 
-SESSION_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SECURE = PROD
 
 STORAGES = {
     "default": {
@@ -366,7 +368,7 @@ ACCOUNT_USERNAME_REQUIRED = False
 LOGIN_REDIRECT_URL = "home"
 
 # django-anymail
-if not DEBUG:
+if PROD:
     ANYMAIL = {
         "AMAZON_SES_CLIENT_PARAMS": {
             "aws_access_key_id": env.str("AWS_ACCESS_KEY_ID", default=None),
@@ -376,7 +378,7 @@ if not DEBUG:
     }
 
 # django-compressor
-COMPRESS_OFFLINE = not DEBUG
+COMPRESS_OFFLINE = PROD
 COMPRESS_FILTERS = {
     "css": [
         "compressor.filters.css_default.CssAbsoluteFilter",
@@ -412,7 +414,7 @@ Q_CLUSTER = {
 }
 
 # sentry
-if (SENTRY_DSN := env.url("SENTRY_DSN", default=None)).scheme and not DEBUG:
+if (SENTRY_DSN := env.url("SENTRY_DSN", default=None)).scheme and PROD:
     sentry_sdk.init(
         dsn=SENTRY_DSN.geturl(),
         environment=env.str(
