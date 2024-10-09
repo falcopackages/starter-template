@@ -80,17 +80,13 @@ coverage-report: test
 # DJANGO
 # ----------------------------------------------------------------------
 
-# Run a falco command
-@falco *COMMAND:
-    just run falco {{ COMMAND }}
-
 # Run a django management command
 @dj *COMMAND:
-    just run python -m manage {{ COMMAND }}
+    just run {{ cookiecutter.project_name }} manage {{ COMMAND }}
 
 # Run the django development server
 @server ADDRESS="":
-    just falco work {{ ADDRESS }}
+    just dj work {{ ADDRESS }}
 
 # Kill the django development server in case the process is running in the background
 @kill-server PORT="8000":
