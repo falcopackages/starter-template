@@ -82,7 +82,7 @@ coverage-report: test
 
 # Run a django management command
 @dj *COMMAND:
-    just run {{ cookiecutter.project_name }} manage {{ COMMAND }}
+    just run {% endraw %}{{ cookiecutter.project_name }}{% raw %} manage {{ COMMAND }}
 
 # Run the django development server
 @server ADDRESS="":
