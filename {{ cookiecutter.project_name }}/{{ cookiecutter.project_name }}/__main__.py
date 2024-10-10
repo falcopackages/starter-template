@@ -5,20 +5,22 @@ import subprocess
 from pathlib import Path
 from contextlib import suppress
 
-HOST = "0.0.0.0"
-PORT = 8000
-PROJECT_NAME = "{{ cookiecutter.project_name }}"
-WSGI_APPLICATION = f"{PROJECT_NAME}.wsgi:application"
-
-current_path = Path(__file__).parent.parent.resolve()
-sys.path.append(str(current_path))
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", f"{PROJECT_NAME}.settings")
-
 
 def main():
+    current_path = Path(__file__).parent.parent.resolve()
+    sys.path.append(str(current_path))
+    os.environ.setdefault(
+        "DJANGO_SETTINGS_MODULE", f"{{ cookiecutter.project_name }}.settings"
+    )
+
+    commands = {
+        "manage": run_manage,
+        "setup": run_setup,
+        "server": run_server,
+        "workers": run_workers,
+    }
     command_key = sys.argv[1] if len(sys.argv) > 1 else None
-    run_func = COMMANDS.get(command_key) or "server"  # run server by default
+    run_func = commands.get(command_key) or "server"  # run server by default
 
     run_func(sys.argv)
 
@@ -61,10 +63,10 @@ def run_server(_):
         "--interface",
         "wsgi",
         "--port",
-        str(PORT),
+        "8000",
         "--host",
-        HOST,
-        WSGI_APPLICATION,
+        "0.0.0.0",
+        ".wsgi:application",
     ]
 
     if "sqlite" in os.getenv("DATABASE_URL", ""):
@@ -96,13 +98,6 @@ def run_manage(argv):
 
     execute_from_command_line(argv[1:])
 
-
-COMMANDS = {
-    "manage": run_manage,
-    "setup": run_setup,
-    "server": run_server,
-    "workers": run_workers,
-}
 
 if __name__ == "__main__":
     main()
