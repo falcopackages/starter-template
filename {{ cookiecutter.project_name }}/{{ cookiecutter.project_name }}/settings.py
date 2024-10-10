@@ -109,7 +109,6 @@ THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    "compressor",
     "crispy_forms",
     "crispy_tailwind",
     "django_extensions",
@@ -342,7 +341,6 @@ STATICFILES_DIRS = [APPS_DIR / "static"]
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-    "compressor.finders.CompressorFinder",
 )
 
 # 3. Third Party Settings
@@ -376,17 +374,6 @@ if PROD:
             "region_name": env.str("AWS_S3_REGION_NAME", default=None),
         }
     }
-
-# django-compressor
-COMPRESS_OFFLINE = PROD
-COMPRESS_FILTERS = {
-    "css": [
-        "compressor.filters.css_default.CssAbsoluteFilter",
-        "compressor.filters.cssmin.rCSSMinFilter",
-        "refreshcss.filters.RefreshCSSFilter",
-    ],
-    "js": ["compressor.filters.jsmin.rJSMinFilter"],
-}
 
 # django-crispy-forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
