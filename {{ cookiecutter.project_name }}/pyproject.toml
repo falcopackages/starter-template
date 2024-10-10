@@ -63,14 +63,6 @@ tests = ["tests", "*/{{ cookiecutter.project_name }}/tests"]
 [tool.coverage.report]
 exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
 
-[tool.falco]
-htmx = "{{ cookiecutter.project_name }}/static/vendors/htmx/htmx.min.js:2.0.2"
-
-[tool.falco.work]
-server = "python manage.py migrate && python manage.py runserver {address}"
-tailwind = "python manage.py tailwind watch"
-worker = "python manage.py qcluster"
-
 [tool.hatch.env]
 requires = [
   "hatch-pip-compile>=1.11.2"
@@ -117,6 +109,7 @@ dependencies = [
     "git-cliff",
     "bump-my-version",
     "hatch-pip-compile",
+    "falco-cli",
 ]
 lock-filename = "requirements-dev.txt"
 
