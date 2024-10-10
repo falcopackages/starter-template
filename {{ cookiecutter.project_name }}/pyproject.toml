@@ -43,7 +43,7 @@ dependencies = [
   "Pillow",
   "psycopg[binary,pool]",
   "sentry-sdk",
-  "whitenoise",
+  "whitenoise[brotli]",
   "refreshcss",
 ]
 
