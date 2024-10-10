@@ -16,12 +16,7 @@ urlpatterns = [
     path(".well-known/security.txt", falco_views.security_txt),
     path("robots.txt", falco_views.robots_txt),
     path("", include("falco_ui.urls")),
-    path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
-    path(
-        "about/",
-        TemplateView.as_view(template_name="pages/about.html"),
-        name="about",
-    ),
+    path("", TemplateView.as_view(template_name="index.html"), name="home"),
     path("health/", MainView.as_view()),
     path("accounts/", include("allauth.urls")),
     path(settings.ADMIN_URL, admin.site.urls),
