@@ -24,6 +24,7 @@ setup:
     just migrate
     just createsuperuser
     just lint > /dev/null 2>&1 || true
+    echo "DEBUG=True" >> .env
 
 # Install dependencies
 @install:
