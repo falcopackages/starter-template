@@ -18,7 +18,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", f"{PROJECT_NAME}.settings")
 
 def main():
     command_key = sys.argv[1] if len(sys.argv) > 1 else None
-    run_func = COMMANDS.get(command_key) or "granian"  # run granian by default
+    run_func = COMMANDS.get(command_key) or "server"  # run server by default
 
     run_func(sys.argv)
 
@@ -49,13 +49,11 @@ def run_setup(_):
         )
 
 
-def run_granian(_):
+def run_server(_):
     """
     Run Granian, the WSGI server. If using SQLite as the database, Litestream is used for replication.
     """
     bin_dir = Path(sys.executable).parent
-    granian_executable = bin_dir / "granian"
-
     workers = multiprocessing.cpu_count() * 2 + 1
     granian_args = [
         "--workers",
@@ -75,12 +73,13 @@ def run_granian(_):
         execute_granian = f"granian {' '.join(granian_args)}"
         command = [str(litestream_executable), "replicate", "-exec", execute_granian]
     else:
+        granian_executable = bin_dir / "granian"
         command = [str(granian_executable)] + granian_args
 
     subprocess.run(command, check=True)
 
 
-def run_qcluster(argv):
+def run_workers(argv):
     """
     Run the Django Q cluster for handling background tasks.
     """
@@ -101,8 +100,8 @@ def run_manage(argv):
 COMMANDS = {
     "manage": run_manage,
     "setup": run_setup,
-    "granian": run_granian,
-    "qcluster": run_qcluster,
+    "server": run_server,
+    "workers": run_workers,
 }
 
 if __name__ == "__main__":
