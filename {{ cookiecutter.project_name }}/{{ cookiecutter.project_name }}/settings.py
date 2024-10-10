@@ -9,6 +9,7 @@ import sentry_sdk
 from environs import Env
 from marshmallow.validate import Email
 from marshmallow.validate import OneOf
+from pygments.lexer import default
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
@@ -42,17 +43,20 @@ ALLOWED_HOSTS = env.list(
 
 ASGI_APPLICATION = "{{ cookiecutter.project_name }}.asgi.application"
 
-# https://grantjenks.com/docs/diskcache/tutorial.html#djangocache
-if "CACHE_LOCATION" in os.environ:
-    CACHES = {
-        "default": {
-            "BACKEND": "diskcache.DjangoCache",
-            "LOCATION": env.str("CACHE_LOCATION"),
-            "TIMEOUT": 300,
-            "SHARDS": 8,
-            "DATABASE_TIMEOUT": 0.010,  # 10 milliseconds
-            "OPTIONS": {"size_limit": 2**30},  # 1 gigabyte
-        }
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+    }
+}
+if PROD:
+    # https://grantjenks.com/docs/diskcache/tutorial.html#djangocache
+    CACHES["default"] = {
+        "BACKEND": "diskcache.DjangoCache",
+        "LOCATION": env.str("CACHE_LOCATION", default=".diskcache"),
+        "TIMEOUT": 300,
+        "SHARDS": 8,
+        "DATABASE_TIMEOUT": 0.010,  # 10 milliseconds
+        "OPTIONS": {"size_limit": 2 ** 30},  # 1 gigabyte
     }
 
 CSRF_COOKIE_SECURE = PROD
@@ -77,7 +81,6 @@ if PROD:
     elif DATABASES["default"]["ENGINE"] == "django.db.backends.postgresql":
         DATABASES["default"]["OPTIONS"] = {"pool": True}
         DATABASES["default"]["ATOMIC_REQUESTS"] = True
-
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -105,7 +108,7 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    "falco_ui", # first to overwrite allauth templates
+    "falco_ui",  # first to overwrite allauth templates
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
