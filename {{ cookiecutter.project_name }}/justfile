@@ -171,6 +171,10 @@ docs-upgrade:
 # BUILD UTILITIES
 # ----------------------------------------------------------------------
 
+# Generate changelog, useful to update the unreleased section
+logchange:
+    just run git-cliff --output CHANGELOG.md
+
 # Bump project version and update changelog
 bumpver VERSION:
     #!/usr/bin/env bash
