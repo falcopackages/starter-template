@@ -110,6 +110,7 @@ dependencies = [
     "bump-my-version",
     "hatch-pip-compile",
     "falco-cli",
+    "honcho",
 ]
 lock-filename = "requirements-dev.txt"
 
