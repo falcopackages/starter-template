@@ -8,6 +8,7 @@ from falco import views as falco_views
 from falco.urls import favicon_urlpatterns, errors_urlpatterns
 from health_check.views import MainView
 from allauth.account.decorators import secure_admin_login
+from debug_toolbar.toolbar import debug_toolbar_urls
 
 admin.autodiscover()
 admin.site.login = secure_admin_login(admin.site.login)
@@ -25,7 +26,5 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += [
         path("__reload__/", include("django_browser_reload.urls")),
-        path("__debug__/", include("debug_toolbar.urls")),
         *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
-    ]
-    urlpatterns += errors_urlpatterns
+    ] + debug_toolbar_urls() + errors_urlpatterns
