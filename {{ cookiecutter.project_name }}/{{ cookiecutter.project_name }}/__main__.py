@@ -76,7 +76,7 @@ def run_server(_):
         command = [str(litestream_executable), "replicate", "-exec", execute_granian]
     else:
         granian_executable = bin_dir / "granian"
-        command = [str(granian_executable)] + granian_args
+        command = [str(granian_executable), *granian_args]
 
     subprocess.run(command, check=True)
 
