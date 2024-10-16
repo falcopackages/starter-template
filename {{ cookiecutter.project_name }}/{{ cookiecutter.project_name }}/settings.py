@@ -392,6 +392,11 @@ DEBUG_TOOLBAR_CONFIG = {
     "ROOT_TAG_EXTRA_ATTRS": "hx-preserve",
 }
 
+# django-litestream
+LITESTREAM = {
+    "config_file": BASE_DIR / "litestream.yml",
+}
+
 # django-q2
 Q_CLUSTER = {
     "name": "ORM",
