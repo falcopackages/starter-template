@@ -179,19 +179,15 @@ logchange:
 bumpver VERSION:
     #!/usr/bin/env bash
     set -euo pipefail
-    just run bump-my-version bump {{ VERSION }}
-    just run git-cliff --output CHANGELOG.md
-
-    if [ -z "$(git status --porcelain)" ]; then
-        echo "No changes to commit."
-        git push && git push --tags
-        exit 0
-    fi
-
-    version="$(hatch version)"
-    git add CHANGELOG.md
-    git commit -m "Generate changelog for version ${version}"
-    git tag -f "v${version}"
+    [ -n "$(git status --porcelain)" ] && { echo "Commit all changes before running this command"; exit 1; }
+    current_version=$(hatch version)
+    hatch version {{ VERSION }}
+    new_version=$(hatch version)
+    msg="Bump version: ${current_version} → ${new_version}"
+    git commit -am "$msg" --no-verify
+    git tag -a "v${new_version}" -m "$msg"
+    just logchanges && git commit -am "Generate changelog for version ${new_version}" --no-verify
+    git tag -f "v${new_version}"
     git push && git push --tags
 
 # Build a wheel distribution of the project using hatch

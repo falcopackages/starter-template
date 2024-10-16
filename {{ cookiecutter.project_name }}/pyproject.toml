@@ -6,7 +6,6 @@ requires = [
 
 [project]
 name = "{{ cookiecutter.project_name }}"
-version = "0.0.1"
 description = ""
 readme = "README.md"
 authors = [{ name = "{{ cookiecutter.author_name }}", email = "{{ cookiecutter.author_email }}" }]
@@ -16,6 +15,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
 ]
+dynamic = [ "version" ]
 dependencies = [
   "django[argon2]>=5.1",
   "django-allauth[socialaccount]",
@@ -67,6 +67,9 @@ requires = [
   "hatch-pip-compile>=1.11.2"
 ]
 
+[tool.hatch.version]
+path = "{{ cookiecutter.project_name }}/__init__.py"
+
 [tool.hatch.metadata]
 allow-direct-references = true
 
@@ -106,7 +109,6 @@ dependencies = [
     "pytest-sugar",
     "pytest-xdist",
     "git-cliff",
-    "bump-my-version",
     "hatch-pip-compile",
     "falco-cli",
     "honcho",
@@ -167,31 +169,6 @@ extend-ignore = ["TID252", "RUF012", "TRY003", "EM101", "I001", "I002"]
 "*/migrations/*" = ["E501"]
 "tests/**/*" = ["PLR2004", "S101", "TID252", "ARG001"]
 "docs/conf.py" = ["INP001", "A001"]
-
-[tool.bumpversion]
-current_version = "0.0.1"
-parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)"
-serialize = [
-  "{major}.{minor}.{patch}",
-]
-search = "{current_version}"
-replace = "{new_version}"
-regex = false
-ignore_missing_version = false
-ignore_missing_files = false
-tag = true
-sign_tags = false
-tag_name = "v{new_version}"
-tag_message = "Bump version: {current_version} → {new_version}"
-allow_dirty = false
-commit = true
-message = "Bump version: {current_version} → {new_version}"
-commit_args = "--no-verify"
-
-[[tool.bumpversion.files]]
-filename = "pyproject.toml"
-search = 'version = "{current_version}"'
-replace = 'version = "{new_version}"'
 
 [tool.git-cliff.changelog]
 header = {% raw %}"""
