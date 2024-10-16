@@ -96,6 +96,8 @@ EMAIL_BACKEND = (
     else "anymail.backends.amazon_ses.EmailBackend"
 )
 
+FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
+
 DJANGO_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -112,8 +114,6 @@ THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    "crispy_forms",
-    "crispy_tailwind",
     "django_extensions",
     "django_htmx",
     "django_litestream",
@@ -121,6 +121,7 @@ THIRD_PARTY_APPS = [
     "django_q_registry",
     "django_tailwind_cli",
     "falco",
+    "falco.forms"
     "health_check",
     "health_check.cache",
     "health_check.contrib.migrations",
@@ -377,11 +378,6 @@ if PROD:
             "region_name": env.str("AWS_S3_REGION_NAME", default=None),
         }
     }
-
-# django-crispy-forms
-CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
-
-CRISPY_TEMPLATE_PACK = "tailwind"
 
 # django-debug-toolbar
 DEBUG_TOOLBAR_CONFIG = {
