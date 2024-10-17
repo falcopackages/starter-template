@@ -172,7 +172,7 @@ docs-upgrade:
 # ----------------------------------------------------------------------
 
 # Generate changelog
-logchange:
+logchanges:
     just run git-cliff --output CHANGELOG.md
 
 # Bump project version and update changelog
