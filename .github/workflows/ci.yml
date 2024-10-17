@@ -18,7 +18,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v3
       - name: Install falco
-        run: uv tool install "falco-cli[just,hatch]"
+        run: uv tool install "falco-cli[just,hatch]" --pre
       - name: Checkout Code Repository
         uses: actions/checkout@v4
       # - name: Debugging with ssh
@@ -39,7 +39,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v3
       - name: Install falco
-        run: uv tool install "falco-cli[just,hatch]"
+        run: uv tool install "falco-cli[just,hatch]" --pre
       - name: Checkout Code Repository
         uses: actions/checkout@v4
       - name: Generate a project
