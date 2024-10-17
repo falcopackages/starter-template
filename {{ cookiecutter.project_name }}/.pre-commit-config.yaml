@@ -58,3 +58,10 @@ repos:
         args: [--write]
         types_or: [html]
 
+      - id: logchanges
+        name: update changelog
+        entry: just logchanges
+        language: system
+        pass_filenames: false
+
+
