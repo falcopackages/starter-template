@@ -121,7 +121,7 @@ THIRD_PARTY_APPS = [
     "django_q_registry",
     "django_tailwind_cli",
     "falco",
-    "falco.forms"
+    "falco.forms",
     "health_check",
     "health_check.cache",
     "health_check.contrib.migrations",
