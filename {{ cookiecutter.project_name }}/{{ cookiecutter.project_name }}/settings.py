@@ -422,11 +422,6 @@ if (SENTRY_DSN := env.url("SENTRY_DSN", default=None)).scheme and PROD:
         send_default_pii=True,
     )
 
-# django-tailwind-cli using DaisyUI
-TAILWIND_CLI_SRC_REPO = "dobicinaitis/tailwind-cli-extra"
-TAILWIND_CLI_ASSET_NAME = "tailwindcss-extra"
-TAILWIND_CLI_VERSION = "1.7.17"
-
 # 4. Project Settings
 # -----------------------------------------------------------------------------------------------------
 
