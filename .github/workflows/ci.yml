@@ -24,7 +24,7 @@ jobs:
       # - name: Debugging with ssh
       #   uses: lhotari/action-upterm@v1
       - name: Generate a project
-        run: falco start-project test-project -b . --skip-new-version-check
+        run: falco start-project test-project -b .
         working-directory: ./
       - name: Run django checks
         run: cd test_project && just dj check --fail-level WARNING
@@ -43,7 +43,7 @@ jobs:
       - name: Checkout Code Repository
         uses: actions/checkout@v4
       - name: Generate a project
-        run: falco start-project test-project -b . --skip-new-version-check
+        run: falco start-project test-project -b .
         working-directory: ./
       - name: Generate requirements.txt
         run: cd test_project && just bootstrap
