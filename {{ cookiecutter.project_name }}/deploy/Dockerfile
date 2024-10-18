@@ -35,9 +35,11 @@ RUN tar -C /s6-install -Jxpf /tmp/s6-overlay-noarch.tar.xz \
 # Build static files
 COPY . /app
 WORKDIR /app
-RUN python manage.py tailwind --skip-checks build \
- && python manage.py collectstatic --no-input --skip-checks --clear \
- && python manage.py compress
+ENV DEBUG=False
+ENV PYTHONPATH="/app"
+ENV DJANGO_SETTINGS_MODULE={{ cookiecutter.project_name }}.settings
+RUN django-admin tailwind --skip-checks build \
+ && django-admin collectstatic --no-input --skip-checks --clear
 
 # Stage 3: Run service
 FROM python-base as production
@@ -47,7 +49,6 @@ COPY --from=builder-base $VENV_PATH $VENV_PATH
 COPY --from=builder-base /app/{{ cookiecutter.project_name }}/staticfiles /app/{{ cookiecutter.project_name }}/staticfiles
 COPY deploy/etc/s6-overlay  /etc/s6-overlay
 COPY {{ cookiecutter.project_name }} /app/{{ cookiecutter.project_name }}
-COPY manage.py /app/manage.py
 RUN rm -r /app/{{ cookiecutter.project_name }}/static/
 
 EXPOSE 8000
