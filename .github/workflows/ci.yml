@@ -46,6 +46,6 @@ jobs:
       - name: Generate requirements.txt
         run: cd test_project && just bootstrap
       - name: Build image
-        run: cd test_project && rm .env && docker build . -f deploy/Dockerfile
+        run: cd test_project && docker build . -f deploy/Dockerfile
 
 
