@@ -11,21 +11,16 @@ jobs:
   create-project:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
       - name: Install uv
         uses: astral-sh/setup-uv@v3
+      - name: Install Hatch
+        uses: pypa/hatch@install
       - name: Install falco
         run: |
           uv tool install falco-cli --pre
           uv tool install just-bin
-          uv tool install hatch
-      - name: Checkout Code Repository
-        uses: actions/checkout@v4
-      # - name: Debugging with ssh
-      #   uses: lhotari/action-upterm@v1
       - name: Generate a project
         run: falco start-project test-project -b .
         working-directory: ./
@@ -37,17 +32,14 @@ jobs:
     steps:
       - name: Checkout Code Repository
         uses: actions/checkout@v4
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3.0.0
       - name: Install uv
         uses: astral-sh/setup-uv@v3
+      - name: Install Hatch
+        uses: pypa/hatch@install
       - name: Install falco
         run: |
           uv tool install falco-cli --pre
           uv tool install just-bin
-          uv tool install hatch
-      - name: Checkout Code Repository
-        uses: actions/checkout@v4
       - name: Generate a project
         run: falco start-project test-project -b .
         working-directory: ./
