@@ -227,6 +227,7 @@ build-linux-bin:
 build-docker-image:
     #!/usr/bin/env bash
     set -euo pipefail
+    export DEBUG="False"
     current_version=$(hatch version)
     image_name="{% endraw %}{{ cookiecutter.project_name }}{% raw %}"
     just install

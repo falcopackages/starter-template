@@ -35,11 +35,8 @@ RUN tar -C /s6-install -Jxpf /tmp/s6-overlay-noarch.tar.xz \
 # Build static files
 COPY . /app
 WORKDIR /app
-ENV DEBUG=False
-ENV PYTHONPATH="/app"
-ENV DJANGO_SETTINGS_MODULE={{ cookiecutter.project_name }}.settings
-RUN django-admin tailwind --skip-checks build \
- && django-admin collectstatic --no-input --skip-checks --clear
+RUN python -m {{ cookiecutter.project_name }} tailwind --skip-checks build \
+ && python -m {{ cookiecutter.project_name }} collectstatic --no-input --skip-checks --clear
 
 # Stage 3: Run service
 FROM python-base as production
