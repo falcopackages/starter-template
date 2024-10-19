@@ -24,6 +24,7 @@ setup:
     just migrate
     just createsuperuser
     just lint > /dev/null 2>&1 || true
+    echo "DEBUG=True" >> .env
 
 # Install dependencies
 @install:
@@ -80,17 +81,13 @@ coverage-report: test
 # DJANGO
 # ----------------------------------------------------------------------
 
-# Run a falco command
-@falco *COMMAND:
-    just run falco {{ COMMAND }}
-
 # Run a django management command
 @dj *COMMAND:
-    just run python -m manage {{ COMMAND }}
+    just run {% endraw %}{{ cookiecutter.project_name }}{% raw %} {{ COMMAND }}
 
 # Run the django development server
 @server ADDRESS="":
-    just falco work {{ ADDRESS }}
+    just dj work {{ ADDRESS }}
 
 # Kill the django development server in case the process is running in the background
 @kill-server PORT="8000":
@@ -133,7 +130,6 @@ createsuperuser EMAIL="admin@localhost" PASSWORD="admin":
 @collectstatic:
     just dj tailwind --skip-checks build
     just dj collectstatic --no-input --skip-checks
-    just dj compress
 
 # ----------------------------------------------------------------------
 # DOCS
@@ -175,23 +171,23 @@ docs-upgrade:
 # BUILD UTILITIES
 # ----------------------------------------------------------------------
 
+# Generate changelog
+logchanges:
+    just run git-cliff --output CHANGELOG.md
+
 # Bump project version and update changelog
 bumpver VERSION:
     #!/usr/bin/env bash
     set -euo pipefail
-    just run bump-my-version bump {{ VERSION }}
-    just run git-cliff --output CHANGELOG.md
-
-    if [ -z "$(git status --porcelain)" ]; then
-        echo "No changes to commit."
-        git push && git push --tags
-        exit 0
-    fi
-
-    version="$(hatch version)"
-    git add CHANGELOG.md
-    git commit -m "Generate changelog for version ${version}"
-    git tag -f "v${version}"
+    [ -n "$(git status --porcelain)" ] && { echo "Commit all changes before running this command"; exit 1; }
+    current_version=$(hatch version)
+    hatch version {{ VERSION }}
+    new_version=$(hatch version)
+    msg="Bump version: ${current_version} → ${new_version}"
+    git commit -am "$msg" --no-verify
+    git tag -a "v${new_version}" -m "$msg"
+    just logchanges && git commit -am "Generate changelog for version ${new_version}" --no-verify
+    git tag -f "v${new_version}"
     git push && git push --tags
 
 # Build a wheel distribution of the project using hatch
@@ -231,6 +227,7 @@ build-linux-bin:
 build-docker-image:
     #!/usr/bin/env bash
     set -euo pipefail
+    export DEBUG="False"
     current_version=$(hatch version)
     image_name="{% endraw %}{{ cookiecutter.project_name }}{% raw %}"
     just install
