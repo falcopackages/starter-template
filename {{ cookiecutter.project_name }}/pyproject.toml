@@ -6,6 +6,7 @@ requires = [
 
 [project]
 name = "{{ cookiecutter.project_name }}"
+version = "0.0.1"
 description = ""
 readme = "README.md"
 authors = [{ name = "{{ cookiecutter.author_name }}", email = "{{ cookiecutter.author_email }}" }]
@@ -15,30 +16,29 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
 ]
-dynamic = [ "version" ]
 dependencies = [
+  "boto3",
+  "diskcache",
   "django[argon2]>=5.1",
   "django-allauth[socialaccount]",
   "django-anymail[amazon-ses]",
   "django-extensions",
   "django-health-check",
   "django-htmx",
-  "django-litestream",
   "django-lifecycle",
-  "django-q2",
+  "django-litestream",
   "django-q-registry",
+  "django-q2",
   "django-storages[s3]",
   "django-tailwind-cli",
   "django-template-partials",
   "django-unique-user-email",
-  "diskcache",
   "environs[django]",
   "falco-app",
   "falco-ui",
-  "heroicons[django]",
   "granian",
-  "boto3",
-  "Pillow",
+  "heroicons[django]",
+  "pillow",
   "psycopg[binary,pool]",
   "sentry-sdk",
   "whitenoise[brotli]",
@@ -46,94 +46,105 @@ dependencies = [
 
 scripts.{{ cookiecutter.project_name }} = "{{ cookiecutter.project_name }}.__main__:main"
 
-[tool.django-stubs]
-django_settings_module = "{{ cookiecutter.project_name }}.settings"
+[tool.ruff]
+target-version = "py312"
+
+# Same as Black.
+line-length = 88
+indent-width = 4
+extend-include = [ "*.pyi?" ]
+# Exclude a variety of commonly ignored directories.
+exclude = [
+  ".bzr",
+  ".direnv",
+  ".eggs",
+  ".git",
+  ".github",
+  ".hg",
+  ".mypy_cache",
+  ".ruff_cache",
+  ".svn",
+  ".tox",
+  ".venv",
+  "__pypackages__",
+  "_build",
+  "build",
+  "dist",
+  "migrations",
+  "node_modules",
+  "venv",
+]
+# Like Black, indent with spaces, rather than tabs.
+format.indent-style = "space"
+# Like Black, use double quotes for strings.
+format.quote-style = "double"
+# Like Black, automatically detect the appropriate line ending.
+format.line-ending = "auto"
+lint.select = [
+  "B",  # flake8-bugbear
+  "E",  # Pycodestyle
+  "F",  # Pyflakes
+  "I",  # isort
+  "UP", # pyupgrade
+]
+lint.ignore = [ "E501", "E741" ] # temporary
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+lint.fixable = [ "A", "B", "C", "D", "E", "F", "I" ]
+lint.unfixable = [  ]
+# Allow unused variables when underscore-prefixed.
+lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "{{ cookiecutter.project_name }}.settings"
+addopts = "--reuse-db -n auto"
+norecursedirs = ".* bin build dist *.egg htmlcov logs node_modules static templates venv"
+python_files = "tests.py test_*.py *_tests.py"
 
 [tool.coverage.run]
-source_pkgs = ["{{ cookiecutter.project_name }}", "tests"]
+source_pkgs = [ "{{ cookiecutter.project_name }}", "tests" ]
 branch = true
 parallel = true
 
 [tool.coverage.paths]
-{{ cookiecutter.project_name }} = ["*/{{ cookiecutter.project_name }}/{{ cookiecutter.project_name }}"]
-tests = ["tests", "*/{{ cookiecutter.project_name }}/tests"]
+{{ cookiecutter.project_name }} = [ "*/{{ cookiecutter.project_name }}/{{ cookiecutter.project_name }}" ]
+tests = [ "tests", "*/{{ cookiecutter.project_name }}/tests" ]
 
 [tool.coverage.report]
-exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
+exclude_lines = [ "no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:" ]
 
-[tool.hatch.env]
-requires = [
-  "hatch-pip-compile>=1.11.2"
+[tool.bumpversion]
+current_version = "0.0.1"
+parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)"
+serialize = [
+  "{major}.{minor}.{patch}",
 ]
+search = "{current_version}"
+replace = "{new_version}"
+regex = false
+ignore_missing_version = false
+ignore_missing_files = false
+tag = true
+sign_tags = false
+tag_name = "v{new_version}"
+tag_message = "Bump version: {current_version} → {new_version}"
+allow_dirty = false
+commit = true
+message = "Bump version: {current_version} → {new_version}"
+commit_args = "--no-verify"
 
-[tool.hatch.version]
-path = "{{ cookiecutter.project_name }}/__init__.py"
-
-[tool.hatch.metadata]
-allow-direct-references = true
-
-[tool.hatch.build.targets.wheel]
-exclude = [
-  "static",
-]
-artifacts = [
-  "staticfiles",
-]
-
-[tool.hatch.build.targets.binary]
-
-[[tool.hatch.envs.all.matrix]]
-python = ["3.11", "3.12"]
-
-[tool.hatch.envs.default]
-type = "pip-compile"
-pip-compile-constraint = "default"
-pip-compile-installer = "uv"
-pip-compile-resolver = "uv"
-lock-filename = "requirements.txt"
-
-[tool.hatch.envs.dev]
-dependencies = [
-    "django-browser-reload",
-    "django-debug-toolbar",
-    "dj-notebook>=0.6.1",
-    "Werkzeug[watchdog]>=3.0.1",
-    "django-stubs[compatible-mypy]",
-    "django-fastdev",
-    "django-watchfiles",
-    "coverage[toml]>=6.5",
-    "pre-commit",
-    "pytest",
-    "pytest-django",
-    "pytest-sugar",
-    "pytest-xdist",
-    "git-cliff",
-    "hatch-pip-compile",
-    "falco-cli",
-    "honcho",
-]
-lock-filename = "requirements-dev.txt"
-
-[tool.hatch.envs.docs]
-template = "dev"
-extra-dependencies = [
-  "furo",
-  "sphinx",
-  "sphinx-autobuild",
-  "sphinx-copybutton",
-  "sphinx-design",
-  "myst-parser",
-]
-lock-filename = "docs/requirements.txt"
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.12"
 check_untyped_defs = true
 ignore_missing_imports = true
 warn_unused_ignores = true
 warn_redundant_casts = true
 warn_unused_configs = true
-plugins = ["mypy_django_plugin.main"]
+plugins = [ "mypy_django_plugin.main" ]
 
 [[tool.mypy.overrides]]
 ignore_errors = true
@@ -147,27 +158,47 @@ module = [
   "djclick.*",
   "gunicorn.*",
   "health_check.*",
-  "*.migrations.*"
+  "*.migrations.*",
 ]
+
+[dependency-groups]
+dev = [
+  "django-browser-reload",
+  "django-debug-toolbar",
+  "dj-notebook>=0.6.1",
+  "Werkzeug[watchdog]>=3.0.1",
+  "django-stubs[compatible-mypy]",
+  "django-fastdev",
+  "django-watchfiles",
+  "coverage[toml]>=6.5",
+  "pre-commit",
+  "ruff",
+  "pytest",
+  "pytest-django",
+  "pytest-sugar",
+  "pytest-xdist",
+  "git-cliff",
+  "bump-my-version",
+  "falco-cli",
+  "honcho",
+]
+docs = [
+  "furo",
+  "sphinx",
+  "sphinx-autobuild",
+  "sphinx-copybutton",
+  "sphinx-design",
+  "myst-parser",
+]
+
+[tool.uv]
+default-groups = [ "dev", "docs" ]
+
+[tool.django-stubs]
+django_settings_module = "{{ cookiecutter.project_name }}.settings"
 
 [tool.mypy_django_plugin]
 ignore_missing_model_attributes = true
-
-[tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "{{ cookiecutter.project_name }}.settings"
-addopts = "--reuse-db -n auto"
-norecursedirs = ".* bin build dist *.egg htmlcov logs node_modules static templates venv"
-python_files = "tests.py test_*.py *_tests.py"
-
-[tool.ruff.lint]
-extend-ignore = ["TID252", "RUF012", "TRY003", "EM101", "I001", "I002"]
-
-[tool.ruff.lint.extend-per-file-ignores]
-"deploy/*" = ["INP001"]
-"*/__main__.py" = [ "S104" ]
-"*/migrations/*" = ["E501"]
-"tests/**/*" = ["PLR2004", "S101", "TID252", "ARG001"]
-"docs/conf.py" = ["INP001", "A001"]
 
 [tool.git-cliff.changelog]
 header = {% raw %}"""
