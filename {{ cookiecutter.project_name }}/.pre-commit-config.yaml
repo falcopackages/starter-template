@@ -60,7 +60,7 @@ repos:
 
       - id: logchanges
         name: update changelog
-        entry: just logchanges
+        entry: just logchanges || true
         language: system
         pass_filenames: false
 
