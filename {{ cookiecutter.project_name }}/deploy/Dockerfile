@@ -46,7 +46,6 @@ COPY --from=builder-base $VENV_PATH $VENV_PATH
 COPY --from=builder-base /app/{{ cookiecutter.project_name }}/staticfiles /app/{{ cookiecutter.project_name }}/staticfiles
 COPY deploy/etc/s6-overlay  /etc/s6-overlay
 COPY {{ cookiecutter.project_name }} /app/{{ cookiecutter.project_name }}
-RUN rm -r /app/{{ cookiecutter.project_name }}/static/
 
 EXPOSE 8000
 ENTRYPOINT ["/init"]
