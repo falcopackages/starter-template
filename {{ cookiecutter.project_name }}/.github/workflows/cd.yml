@@ -138,13 +138,13 @@ jobs:
       - name: Rename
         working-directory: ${{ github.workspace }}
         run: |-
-          mv dist/binary/{% endraw %}{{ cookiecutter.project_name }}{% raw %}* dist/binary/{% endraw %}{{ cookiecutter.project_name }}{% raw %}-${{ matrix.job.release_suffix }}
+          mv dist/bin/{% endraw %}{{ cookiecutter.project_name }}{% raw %}* dist/bin/{% endraw %}{{ cookiecutter.project_name }}{% raw %}-${{ matrix.job.release_suffix }}
 
       - name: Upload built binary package
         uses: actions/upload-artifact@v4
         with:
           name: binaries-${{ matrix.job.release_suffix }}
-          path: dist/binary/*
+          path: dist/bin/*
           if-no-files-found: error
 
   release:
