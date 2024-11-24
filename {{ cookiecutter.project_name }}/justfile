@@ -65,6 +65,13 @@ coverage-report: test
 @deploy-checks:
     just dj check --deploy
 
+# Run continuous integration checks
+@runci:
+    just types
+    just test
+    just deploy-checks
+    just collectstatic
+
 # ----------------------------------------------------------------------
 # DJANGO
 # ----------------------------------------------------------------------
