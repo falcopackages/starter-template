@@ -16,6 +16,7 @@ _default:
 setup:
     #!/usr/bin/env bash
     [ ! -d .git ] && git init && git add -A
+    mv .rename_to_.github .github > /dev/null 2>&1 || true # needed when project was generated from github
     just bootstrap
     uv run pre-commit install --install-hooks
     just migrate
