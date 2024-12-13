@@ -18,7 +18,7 @@ setup:
     [ ! -d .git ] && git init && git add -A
     mv .rename_to_.github .github > /dev/null 2>&1 || true # needed when project was generated from github
     just bootstrap
-    uv run pre-commit install --install-hooks
+    just pre-commit install --install-hooks
     just migrate
     just createsuperuser
     just lint > /dev/null 2>&1 || true
@@ -143,16 +143,20 @@ createsuperuser EMAIL="admin@localhost" PASSWORD="admin":
 # LINTING / FORMATTING
 # ----------------------------------------------------------------------
 
+# Run pre-commit
+@pre-commit *ARGS:
+    uvx pre-commit --with pre-commit-uv {{ ARGS }}
+
 # Run all formatters
 @fmt:
     just --fmt --unstable
-    uv run pre-commit run pyproject-fmt -a > /dev/null 2>&1 || true
-    uv run pre-commit run reorder-python-imports -a  > /dev/null 2>&1 || true
-    uv run pre-commit run djade -a  > /dev/null 2>&1 || true
+    just pre-commit run pyproject-fmt -a > /dev/null 2>&1 || true
+    just pre-commit run reorder-python-imports -a  > /dev/null 2>&1 || true
+    just pre-commit run djade -a  > /dev/null 2>&1 || true
 
 # Run pre-commit on all files
 @lint:
-    uv run pre-commit run --all-files
+    just pre-commit run --all-files
 
 # ----------------------------------------------------------------------
 # BUILD UTILITIES
@@ -160,13 +164,13 @@ createsuperuser EMAIL="admin@localhost" PASSWORD="admin":
 
 # Generate changelog
 logchanges *ARGS:
-    uv run git-cliff --output CHANGELOG.md {{ ARGS }}
+    uvx git-cliff --output CHANGELOG.md {{ ARGS }}
 
 # Bump project version and update changelog
 bumpver VERSION:
     #!/usr/bin/env bash
     set -euo pipefail
-    uv run bump-my-version bump {{ VERSION }}
+    uvx bump-my-version bump {{ VERSION }}
     just logchanges
     [ -z "$(git status --porcelain)" ] && { echo "No changes to commit."; git push && git push --tags; exit 0; }
     version="$(uv run bump-my-version show current_version)"

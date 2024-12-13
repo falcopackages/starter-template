@@ -45,7 +45,7 @@ repos:
     hooks:
       - id: fmt
         name: ruff format
-        entry: uv run ruff format
+        entry: uvx ruff format
         language: system
         files: \.py
 
