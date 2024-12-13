@@ -64,4 +64,10 @@ repos:
         language: system
         pass_filenames: false
 
+      - id: export-requirements
+        name: export requirements
+        entry: just lock
+        language: system
+        pass_filenames: false
+
 
