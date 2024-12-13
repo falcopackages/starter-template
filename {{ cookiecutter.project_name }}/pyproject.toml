@@ -19,6 +19,7 @@ classifiers = [
 dependencies = [
   "boto3",
   "diskcache",
+  "crispy-tailwind",
   "django[argon2]>=5.1",
   "django-allauth[socialaccount]",
   "django-anymail[amazon-ses]",
