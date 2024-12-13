@@ -145,7 +145,7 @@ createsuperuser EMAIL="admin@localhost" PASSWORD="admin":
 
 # Run pre-commit
 @pre-commit *ARGS:
-    uvx pre-commit --with pre-commit-uv {{ ARGS }}
+    uvx --with pre-commit-uv pre-commit {{ ARGS }}
 
 # Run all formatters
 @fmt:
