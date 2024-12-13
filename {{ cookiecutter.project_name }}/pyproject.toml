@@ -173,7 +173,6 @@ dev = [
   "django-watchfiles",
   "coverage[toml]>=6.5",
   "pre-commit",
-  "pre-commit-uv",
   "ruff",
   "pytest",
   "pytest-django",
