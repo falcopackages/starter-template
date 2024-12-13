@@ -180,7 +180,7 @@ dev = [
   "pytest-xdist",
   "git-cliff",
   "bump-my-version",
-  "falco-cli",
+  "falco-cli>=0.27.0a6",
   "honcho",
 ]
 docs = [
