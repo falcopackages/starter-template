@@ -28,12 +28,11 @@ dependencies = [
   "django-htmx",
   "django-lifecycle",
   "django-litestream",
-  "django-q-registry",
-  "django-q2",
   "django-storages[s3]",
   "django-tailwind-cli",
   "django-template-partials",
   "django-unique-user-email",
+  "django-tasks", # remove when merged into django hopefully for 5.2
   "environs[django]",
   "falco-app",
   "falco-ui",

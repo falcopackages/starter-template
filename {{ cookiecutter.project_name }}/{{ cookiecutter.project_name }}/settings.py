@@ -1,6 +1,4 @@
-import multiprocessing
 import sys
-import os
 
 from email.utils import parseaddr
 from pathlib import Path
@@ -119,9 +117,9 @@ THIRD_PARTY_APPS = [
     "django_extensions",
     "django_htmx",
     "django_litestream",
-    "django_q",
-    "django_q_registry",
     "django_tailwind_cli",
+    "django_tasks",
+    "django_tasks.backends.database",
     "falco",
     "health_check",
     "health_check.cache",
@@ -399,15 +397,11 @@ LITESTREAM = {
     "config_file": BASE_DIR / "litestream.yml",
 }
 
-# django-q2
-Q_CLUSTER = {
-    "name": "ORM",
-    "workers": multiprocessing.cpu_count() * 2 + 1,
-    "timeout": 60 * 10,  # 10 minutes
-    "retry": 60 * 12,  # 12 minutes
-    "queue_limit": 50,
-    "bulk": 10,
-    "orm": "default",
+# django-tasks
+TASKS = {
+    "default": {
+        "BACKEND": "django_tasks.backends.database.DatabaseBackend"
+    }
 }
 
 # sentry

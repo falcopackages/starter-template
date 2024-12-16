@@ -23,6 +23,5 @@ class Command(BaseCommand):
             )
         call_command("collectstatic", "--skip-checks", "--no-input")
         call_command("migrate", "--skip-checks")
-        call_command("setup_periodic_tasks", "--skip-checks")
         with suppress(CommandError):
             call_command("createsuperuser", "--skip-checks", "--noinput", "--traceback")
