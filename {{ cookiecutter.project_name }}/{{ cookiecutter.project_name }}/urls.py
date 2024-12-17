@@ -5,7 +5,7 @@ from django.urls import include
 from django.urls import path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
-from falco_toolbox import views as toolbox_views
+from falco.urls import favicon_urlpatterns
 from health_check.views import MainView
 from allauth.account.decorators import secure_admin_login
 
@@ -13,9 +13,9 @@ admin.autodiscover()
 admin.site.login = secure_admin_login(admin.site.login)
 
 urlpatterns = [
-    path(".well-known/security.txt", toolbox_views.security_txt),
-    path("robots.txt", toolbox_views.robots_txt),
-    path("", include("falco_ui.favicons.urls")),
+    path(".well-known/security.txt", falco_views.security_txt),
+    path("robots.txt", falco_views.robots_txt),
+    path("", include(favicon_urlpatterns)),
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
     path(
         "about/",

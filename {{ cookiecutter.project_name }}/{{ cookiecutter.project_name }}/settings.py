@@ -12,8 +12,8 @@ from marshmallow.validate import OneOf
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
-from falco_toolbox.sentry import sentry_profiles_sampler
-from falco_toolbox.sentry import sentry_traces_sampler
+from falco.sentry import sentry_profiles_sampler
+from falco.sentry import sentry_traces_sampler
 
 # 0. Setup
 # --------------------------------------------------------------------------------------------
@@ -101,8 +101,7 @@ THIRD_PARTY_APPS = [
     "django_q",
     "django_q_registry",
     "django_tailwind_cli",
-    "falco_ui.favicons",
-    "falco_toolbox",
+    "falco",
     "health_check",
     "health_check.cache",
     "health_check.contrib.migrations",
