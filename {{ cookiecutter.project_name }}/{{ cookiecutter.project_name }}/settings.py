@@ -67,7 +67,8 @@ if PROD:
         # https://blog.pecar.me/sqlite-django-config
         # https://blog.pecar.me/sqlite-prod
         DATABASES["default"]["OPTIONS"] = {
-            "transaction_mode": "IMMEDIATE",
+            # "transaction_mode": "IMMEDIATE", better for throughput
+            "transaction_mode": "EXCLUSIVE", # django-tasks require this
             "init_command": """
                 PRAGMA journal_mode=WAL;
                 PRAGMA synchronous=NORMAL;
@@ -400,9 +401,15 @@ LITESTREAM = {
 # django-tasks
 TASKS = {
     "default": {
-        "BACKEND": "django_tasks.backends.database.DatabaseBackend"
+        "BACKEND": "django_tasks.backends.immediate.ImmediateBackend"
     }
 }
+if PROD:
+    TASKS = {
+        "default": {
+            "BACKEND": "django_tasks.backends.database.DatabaseBackend"
+        }
+    }
 
 # sentry
 if (SENTRY_DSN := env.url("SENTRY_DSN", default=None)).scheme and PROD:
