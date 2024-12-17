@@ -6,6 +6,7 @@ from django.urls import path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
 from falco.urls import favicon_urlpatterns
+from falco import views as falco_views
 from health_check.views import MainView
 from allauth.account.decorators import secure_admin_login
 
