@@ -22,7 +22,7 @@ jobs:
       # - name: Debugging with ssh
       #   uses: lhotari/action-upterm@v1
       - name: Generate a project
-        run: falco start-project test-project -b . --skip-new-version-check
+        run: falco start-project test-project -b .
         working-directory: ./
       - name: Install Hatch
         uses: pypa/hatch@install
@@ -41,7 +41,7 @@ jobs:
       - name: Install falco
         run: pip install falco-cli --pre
       - name: Generate a project
-        run: falco start-project test-project -b . --skip-new-version-check
+        run: falco start-project test-project -b . 
         working-directory: ./
       - name: Install Hatch
         uses: pypa/hatch@install
