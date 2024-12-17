@@ -7,7 +7,6 @@ import sentry_sdk
 from environs import Env
 from marshmallow.validate import Email
 from marshmallow.validate import OneOf
-from pygments.lexer import default
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
@@ -405,11 +404,7 @@ TASKS = {
     }
 }
 if PROD:
-    TASKS = {
-        "default": {
-            "BACKEND": "django_tasks.backends.database.DatabaseBackend"
-        }
-    }
+    TASKS["default"]["BACKEND"] = "django_tasks.backends.database.DatabaseBackend"
 
 # sentry
 if (SENTRY_DSN := env.url("SENTRY_DSN", default=None)).scheme and PROD:
