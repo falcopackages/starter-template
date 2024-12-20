@@ -1,7 +1,7 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 default_language_version:
-  python: python3.12 # TODO: change this to your virtualenv's Python version
+  python: python3.12
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -16,6 +16,8 @@ repos:
       - id: check-case-conflict
       - id: check-symlinks
       - id: check-json
+      - id: check-merge-conflict
+        args: [--assume-in-merge]
 
   - repo: https://github.com/asottile/reorder_python_imports
     rev: v3.13.0
@@ -27,13 +29,13 @@ repos:
   - repo: https://github.com/adamchainz/djade-pre-commit
     rev: "1.2.0"
     hooks:
-    -   id: djade
+      - id: djade
         args: [--target-version, "5.1"]
 
   - repo: https://github.com/adamchainz/django-upgrade
     rev: "1.21.0"
     hooks:
-    -   id: django-upgrade
+      - id: django-upgrade
         args: [--target-version, "5.1"]
 
   - repo: https://github.com/tox-dev/pyproject-fmt
@@ -41,14 +43,24 @@ repos:
     hooks:
       - id: pyproject-fmt
 
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.3
+    hooks:
+      - id: ruff
+        types_or: [python, pyi]
+        args: [--fix]
+      - id: ruff-format
+        types_or: [python, pyi]
+
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.5.9
+    hooks:
+      - id: uv-lock
+      - id: uv-export
+        args: ["--no-emit-project", "--output-file=requirements.txt"]
+
   - repo: local
     hooks:
-      - id: fmt
-        name: ruff format
-        entry: uvx ruff format
-        language: system
-        files: \.py
-
       - id: rustywind
         name: rustywind Tailwind CSS class linter
         language: node
@@ -63,11 +75,3 @@ repos:
         entry: just logchanges || true
         language: system
         pass_filenames: false
-
-      - id: export-requirements
-        name: export requirements
-        entry: just lock
-        language: system
-        pass_filenames: false
-
-

@@ -30,7 +30,7 @@ setup:
 
 # Generate requirements.txt file
 @lock *ARGS:
-    uv pip compile pyproject.toml --output-file requirements.txt --generate-hashes {{ ARGS }}
+    uv export --no-emit-project --output-file=requirements.txt {{ ARGS }}
 
 # Generate and upgrade dependencies
 @upgrade:
