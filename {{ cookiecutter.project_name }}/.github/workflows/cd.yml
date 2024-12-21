@@ -19,7 +19,7 @@ jobs:
           caprover-server-url: ${{ secrets.CAPROVER_SERVER_URL }}
           caprover-app-token: ${{ secrets.CAPROVER_APP_TOKEN }}
           docker-file-name: deploy/Dockerfile
-  
+
   build-python-wheel-and-sdist:
     name: Build a pure Python wheel and source distribution
     runs-on: ubuntu-latest
@@ -27,14 +27,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Hatch
-        uses: pypa/hatch@install
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
 
       - name: Install just
         uses: extractions/setup-just@v2
 
+      - name: Bootstrap
+        run: just bootstrap
+
       - name: Build
-        run: just build-wheel
+        run: uv build
 
       - uses: actions/upload-artifact@v4
         with:
@@ -86,8 +89,8 @@ jobs:
       CARGO_BUILD_TARGET: ${{ matrix.job.target }}
 
     steps:
-      - name: Install Hatch
-        uses: pypa/hatch@install
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
 
       - name: Install just
         uses: extractions/setup-just@v2
@@ -118,7 +121,7 @@ jobs:
           rustup -V
           rustc -V
           cargo -V
-          hatch --version
+          uv --version
 
       - uses: actions/download-artifact@v4
         with:
@@ -126,19 +129,22 @@ jobs:
           path: ${{ github.workspace }}/dist
           merge-multiple: true
 
+      - name: Bootstrap
+        run: just bootstrap
+
       - name: Build binary
         run: just build-bin
 
       - name: Rename
         working-directory: ${{ github.workspace }}
         run: |-
-          mv dist/binary/{% endraw %}{{ cookiecutter.project_name }}{% raw %}* dist/binary/{% endraw %}{{ cookiecutter.project_name }}{% raw %}-${{ matrix.job.release_suffix }}
+          mv dist/bin/{% endraw %}{{ cookiecutter.project_name }}{% raw %}* dist/bin/{% endraw %}{{ cookiecutter.project_name }}{% raw %}-${{ matrix.job.release_suffix }}
 
       - name: Upload built binary package
         uses: actions/upload-artifact@v4
         with:
           name: binaries-${{ matrix.job.release_suffix }}
-          path: dist/binary/*
+          path: dist/bin/*
           if-no-files-found: error
 
   release:
@@ -150,12 +156,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Install Hatch
-        uses: pypa/hatch@install
-
-      - name: Install just
-        uses: extractions/setup-just@v2
 
       - uses: actions/download-artifact@v4
         with:

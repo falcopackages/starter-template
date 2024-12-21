@@ -35,9 +35,8 @@ RUN tar -C /s6-install -Jxpf /tmp/s6-overlay-noarch.tar.xz \
 # Build static files
 COPY . /app
 WORKDIR /app
-RUN python manage.py tailwind --skip-checks build \
- && python manage.py collectstatic --no-input --skip-checks --clear \
- && python manage.py compress
+RUN python -m {{ cookiecutter.project_name }} tailwind --skip-checks build \
+ && python -m {{ cookiecutter.project_name }} collectstatic --no-input --skip-checks --clear
 
 # Stage 3: Run service
 FROM python-base as production
@@ -47,8 +46,6 @@ COPY --from=builder-base $VENV_PATH $VENV_PATH
 COPY --from=builder-base /app/{{ cookiecutter.project_name }}/staticfiles /app/{{ cookiecutter.project_name }}/staticfiles
 COPY deploy/etc/s6-overlay  /etc/s6-overlay
 COPY {{ cookiecutter.project_name }} /app/{{ cookiecutter.project_name }}
-COPY manage.py /app/manage.py
-RUN rm -r /app/{{ cookiecutter.project_name }}/static/
 
 EXPOSE 8000
 ENTRYPOINT ["/init"]

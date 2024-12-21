@@ -10,46 +10,36 @@ _default:
 
 # Bootstrap local development environment
 @bootstrap:
-    hatch env create
-    hatch env create dev
-    hatch env create docs
     just install
 
-# Setup local environnment (maybe install hatch and setup postgres (create database, etc..))
+# Setup local environnment
 setup:
     #!/usr/bin/env bash
     [ ! -d .git ] && git init && git add -A
+    mv .rename_to_.github .github > /dev/null 2>&1 || true # needed when project was generated from github
     just bootstrap
-    just run pre-commit install --install-hooks
+    just pre-commit install --install-hooks
     just migrate
     just createsuperuser
     just lint > /dev/null 2>&1 || true
+    echo "DEBUG=True" >> .env
 
 # Install dependencies
 @install:
-    just run python --version
+    uv sync
+
+# Generate requirements.txt file
+@lock *ARGS:
+    uv export --no-emit-project --output-file=requirements.txt {{ ARGS }}
 
 # Generate and upgrade dependencies
 @upgrade:
-    just run hatch-pip-compile --upgrade
-    just run hatch-pip-compile dev --upgrade
+    uv sync --upgrade
 
 # Clean up local development environment
 @clean:
-    hatch env prune
+    rm -rf .venv
     rm -f .coverage.*
-
-# ----------------------------------------------------------------------
-# UTILITIES
-# ----------------------------------------------------------------------
-
-# Run a command within the dev environnment
-@run *ARGS:
-    hatch --env dev run {{ ARGS }}
-
-# Get the full path of a hatch environment
-@env-path ENV="dev":
-    hatch env find {{ ENV }}
 
 # ----------------------------------------------------------------------
 # TESTING/TYPES
@@ -58,39 +48,42 @@ setup:
 # Run the test suite, generate code coverage, and export html report
 @coverage-html: test
     rm -rf htmlcov
-    @just run python -m coverage html --skip-covered --skip-empty
+    @uv run python -m coverage html --skip-covered --skip-empty
 
 # Run the test suite, generate code coverage, and print report to stdout
 coverage-report: test
-    @just run python -m coverage report
+    @uv run python -m coverage report
 
 # Run tests using pytest
 @test *ARGS:
-    just run coverage run -m pytest {{ ARGS }}
+    uv run coverage run -m pytest {{ ARGS }}
 
 # Run mypy on project
 @types:
-    just run python -m mypy .
+    uv run python -m mypy .
 
 # Run the django deployment checks
 @deploy-checks:
     just dj check --deploy
 
+# Run continuous integration checks
+@runci:
+    just types
+    just test
+    just deploy-checks
+    just collectstatic
+
 # ----------------------------------------------------------------------
 # DJANGO
 # ----------------------------------------------------------------------
 
-# Run a falco command
-@falco *COMMAND:
-    just run falco {{ COMMAND }}
-
 # Run a django management command
 @dj *COMMAND:
-    just run python -m manage {{ COMMAND }}
+    uv run -m {% endraw %}{{ cookiecutter.project_name }}{% raw %} {{ COMMAND }}
 
 # Run the django development server
 @server ADDRESS="":
-    just falco work {{ ADDRESS }}
+    just dj work {{ ADDRESS }}
 
 # Kill the django development server in case the process is running in the background
 @kill-server PORT="8000":
@@ -133,7 +126,6 @@ createsuperuser EMAIL="admin@localhost" PASSWORD="admin":
 @collectstatic:
     just dj tailwind --skip-checks build
     just dj collectstatic --no-input --skip-checks
-    just dj compress
 
 # ----------------------------------------------------------------------
 # DOCS
@@ -141,97 +133,83 @@ createsuperuser EMAIL="admin@localhost" PASSWORD="admin":
 
 # Build documentation using Sphinx
 @docs-build LOCATION="docs/_build/html":
-    sphinx-build docs {{ LOCATION }}
-
-# Install documentation dependencies
-@docs-install:
-    hatch run docs:python --version
+    uv run sphinx-build docs {{ LOCATION }}
 
 # Serve documentation locally
 @docs-serve:
-    hatch run docs:sphinx-autobuild docs docs/_build/html --port 8001
-
-# Generate and upgrade documentation dependencies
-docs-upgrade:
-    just run hatch-pip-compile dev --upgrade
+    uv run sphinx-autobuild docs docs/_build/html --port 8001
 
 # ----------------------------------------------------------------------
 # LINTING / FORMATTING
 # ----------------------------------------------------------------------
 
+# Run pre-commit
+@pre-commit *ARGS:
+    uvx --with pre-commit-uv pre-commit {{ ARGS }}
+
 # Run all formatters
 @fmt:
     just --fmt --unstable
-    hatch fmt --formatter
-    just run pre-commit run pyproject-fmt -a  > /dev/null 2>&1 || true
-    just run pre-commit run reorder-python-imports -a  > /dev/null 2>&1 || true
-    just run pre-commit run djade -a  > /dev/null 2>&1 || true
+    just pre-commit run pyproject-fmt -a > /dev/null 2>&1 || true
+    just pre-commit run reorder-python-imports -a  > /dev/null 2>&1 || true
+    just pre-commit run djade -a  > /dev/null 2>&1 || true
 
 # Run pre-commit on all files
 @lint:
-    hatch --env dev run pre-commit run --all-files
+    just pre-commit run --all-files
 
 # ----------------------------------------------------------------------
 # BUILD UTILITIES
 # ----------------------------------------------------------------------
 
+# Generate changelog
+logchanges *ARGS:
+    uvx git-cliff --output CHANGELOG.md {{ ARGS }}
+
 # Bump project version and update changelog
 bumpver VERSION:
     #!/usr/bin/env bash
     set -euo pipefail
-    just run bump-my-version bump {{ VERSION }}
-    just run git-cliff --output CHANGELOG.md
-
-    if [ -z "$(git status --porcelain)" ]; then
-        echo "No changes to commit."
-        git push && git push --tags
-        exit 0
-    fi
-
-    version="$(hatch version)"
-    git add CHANGELOG.md
+    uvx bump-my-version bump {{ VERSION }}
+    just logchanges
+    [ -z "$(git status --porcelain)" ] && { echo "No changes to commit."; git push && git push --tags; exit 0; }
+    version="$(uv run bump-my-version show current_version)"
+    git add -A
     git commit -m "Generate changelog for version ${version}"
     git tag -f "v${version}"
     git push && git push --tags
 
-# Build a wheel distribution of the project using hatch
-build-wheel:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    export DEBUG="False"
-    just collectstatic
-    hatch build
-
-# Build a binary distribution of the project using hatch / pyapp
+# Build a binary distribution of the project using pyapp
 build-bin:
     #!/usr/bin/env bash
-    current_version=$(hatch version)
-    wheel_path="${PWD}/dist/{% endraw %}{{ cookiecutter.project_name }}{% raw %}-${current_version}-py3-none-any.whl"
-    [ -f "$wheel_path" ] || { echo "Wheel file does not exist. Please build the wheel first using the 'buildwheel' recipe."; exit 1; }
+    current_version=$(uv run bump-my-version show current_version)
+    uv build
     export PYAPP_UV_ENABLED="1"
     export PYAPP_PYTHON_VERSION="3.12"
     export PYAPP_FULL_ISOLATION="1"
     export PYAPP_EXPOSE_METADATA="1"
     export PYAPP_PROJECT_NAME="{% endraw %}{{ cookiecutter.project_name }}{% raw %}"
     export PYAPP_PROJECT_VERSION="${current_version}"
-    export PYAPP_PROJECT_PATH="${wheel_path}"
+    export PYAPP_PROJECT_PATH="${PWD}/dist/{% endraw %}{{ cookiecutter.project_name }}{% raw %}-${current_version}-py3-none-any.whl"
     export PYAPP_DISTRIBUTION_EMBED="1"
-    hatch build -t binary
+    export RUST_BACKTRACE="full"
+    cargo install pyapp --force --root dist
+    mv dist/bin/pyapp "dist/bin/{% endraw %}{{ cookiecutter.project_name }}{% raw %}-${current_version}"
 
 # Build linux binary in docker
 build-linux-bin:
     mkdir dist || true
     docker build -t build-bin-container . -f deploy/Dockerfile.binary
-    docker run -it -v "${PWD}:/app" -w /app --name final-build build-bin-container just build-wheel && just build-bin
+    docker run -it -v "${PWD}:/app" -w /app --name final-build build-bin-container uv build && just build-bin
     docker cp final-build:/app/dist .
     docker rm -f final-build
-
 
 # Build docker image
 build-docker-image:
     #!/usr/bin/env bash
     set -euo pipefail
-    current_version=$(hatch version)
+    export DEBUG="False"
+    current_version=$(uv run bump-my-version show current_version)
     image_name="{% endraw %}{{ cookiecutter.project_name }}{% raw %}"
     just install
     docker build -t "${image_name}:${current_version}" -f deploy/Dockerfile .
