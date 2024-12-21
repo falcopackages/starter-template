@@ -108,7 +108,6 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    "falco_ui",  # first to overwrite allauth templates
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
