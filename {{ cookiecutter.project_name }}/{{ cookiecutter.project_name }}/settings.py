@@ -132,7 +132,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    "{{ cookiecutter.project_name }}.core",
+    "{{ cookiecutter.project_name }}",
 ]
 
 if DEBUG:

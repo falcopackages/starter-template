@@ -1,9 +1,9 @@
 from django.apps import AppConfig
 
 
-class CoreConfig(AppConfig):
+class {{ cookiecutter.project_name }}Config(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "{{ cookiecutter.project_name }}.core"
+    name = "{{ cookiecutter.project_name }}"
 
     def ready(self):
         # This prevents django-fastdev from raising an error when accessing the signup page.
