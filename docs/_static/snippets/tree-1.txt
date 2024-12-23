@@ -1,0 +1,17 @@
+demo
+├── .github
+├── deploy
+├── docs
+├── tests
+├── demo
+├── .dockerignore
+├── .editorconfig
+├── .env.template
+├── .gitignore
+├── .pre-commit-config.yaml
+├── CHANGELOG.md
+├── README.md
+├── justfile
+├── playground.ipynb
+├── pyproject.toml
+└── tailwind.config.js
