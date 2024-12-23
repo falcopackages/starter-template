@@ -27,8 +27,8 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install Hatch
-        uses: pypa/hatch@install
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
 
       - name: Install just
         uses: extractions/setup-just@v2
@@ -47,11 +47,14 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install Hatch
-        uses: pypa/hatch@install
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
 
       - name: Install just
         uses: extractions/setup-just@v2
+
+      - name: Bootstrap
+        run: just bootstrap
 
       - name: Run deployment checks
         run: just deploy-checks
@@ -62,18 +65,17 @@ jobs:
       - name: Checkout Code Repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install Hatch
-        uses: pypa/hatch@install
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
 
       - name: Install just
         uses: extractions/setup-just@v2
 
+      - name: Bootstrap
+        run: just bootstrap
+
       - name: Build staticfiles
         run: just collectstatic
+
       - name: Test with pytest
         run: just test
