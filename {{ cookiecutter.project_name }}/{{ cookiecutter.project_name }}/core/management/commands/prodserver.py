@@ -29,7 +29,7 @@ class Command(BaseCommand):
             options["host"],
             "--interface",
             "wsgi",
-            "blaze.wsgi:application",
+            "{{ cookiecutter.project_name }}.wsgi:application",
         ]
         if use_litestream():
             # Construct the Granian command as a single string for Litestream
