@@ -13,9 +13,6 @@
 
 ### Setup project
 
-Ensure that the Python version specified in your `.pre-commit-config.yaml` file aligns with the Python in your virtual environment.
-Hatch can [manage your python installation](https://hatch.pypa.io/latest/tutorials/python/manage/) if needed.
-
 ```shell
 just setup
 ```
