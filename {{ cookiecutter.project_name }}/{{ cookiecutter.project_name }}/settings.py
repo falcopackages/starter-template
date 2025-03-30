@@ -33,7 +33,7 @@ PROD = not DEBUG
 # https://docs.djangoproject.com/en/4.0/ref/settings/
 
 ALLOWED_HOSTS = env.list(
-    "ALLOWED_HOSTS", default=["*"] if DEBUG else ["localhost"], subcast=str
+    "ALLOWED_HOSTS", default=["*"] if not PROD else ["localhost"], subcast=str
 )
 
 ASGI_APPLICATION = "{{ cookiecutter.project_name }}.asgi.application"
@@ -137,7 +137,7 @@ LOCAL_APPS = [
     "{{ cookiecutter.project_name }}.core",
 ]
 
-if DEBUG:
+if not PROD:
     # Development only apps
     THIRD_PARTY_APPS = [
         "debug_toolbar",
@@ -150,7 +150,7 @@ if DEBUG:
 
 INSTALLED_APPS = LOCAL_APPS + THIRD_PARTY_APPS + DJANGO_APPS
 
-if DEBUG:
+if not PROD:
     INTERNAL_IPS = [
         "127.0.0.1",
         "10.0.2.2",
@@ -214,7 +214,7 @@ MIDDLEWARE = [
     # should be last
     "django.middleware.cache.FetchFromCacheMiddleware",
 ]
-if DEBUG:
+if not PROD:
     MIDDLEWARE.remove("django.middleware.cache.UpdateCacheMiddleware")
     MIDDLEWARE.remove("django.middleware.cache.FetchFromCacheMiddleware")
     MIDDLEWARE.append("django_browser_reload.middleware.BrowserReloadMiddleware")
@@ -235,7 +235,7 @@ SECURE_HSTS_PRELOAD = PROD
 # https://docs.djangoproject.com/en/dev/ref/middleware/#http-strict-transport-security
 # 2 minutes to start with, will increase as HSTS is tested
 # example of production value: 60 * 60 * 24 * 7 = 604800 (1 week)
-SECURE_HSTS_SECONDS = 0 if DEBUG else env.int("SECURE_HSTS_SECONDS", default=60 * 2)
+SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", default=60 * 2) if PROD else 0
 
 # https://noumenal.es/notes/til/django/csrf-trusted-origins/
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
@@ -334,7 +334,7 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
-if DEBUG:
+if not PROD:
     AUTH_PASSWORD_VALIDATORS = []
 
 # django.contrib.staticfiles
@@ -355,7 +355,7 @@ STATICFILES_FINDERS = (
 # django-allauth
 ACCOUNT_LOGIN_METHODS = {"email"}
 
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http" if DEBUG else "https"
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https" if PROD else "http"
 
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*"]
 
