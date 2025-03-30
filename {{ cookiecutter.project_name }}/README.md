@@ -40,6 +40,7 @@ Instead of running `python manage.py command`, you can run (while your virtualen
 source .venv/bin/activate
 python -m {{ cookiecutter.project_name }} migrate
 python {{ cookiecutter.project_name }} runserver # -m is optional
+{{ cookiecutter.project_name }} runserver
 ```
 
 > [!TIP]
