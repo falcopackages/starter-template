@@ -388,7 +388,10 @@ CRISPY_TEMPLATE_PACK = "tailwind"
 
 # django-debug-toolbar
 DEBUG_TOOLBAR_CONFIG = {
-    "DISABLE_PANELS": ["debug_toolbar.panels.redirects.RedirectsPanel"],
+    "DISABLE_PANELS": [
+        "debug_toolbar.panels.redirects.RedirectsPanel",
+        "debug_toolbar.panels.profiling.ProfilingPanel",
+    ],
     "SHOW_TEMPLATE_CONTEXT": True,
     "SHOW_COLLAPSED": True,
     "UPDATE_ON_FETCH": True,
