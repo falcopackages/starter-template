@@ -30,5 +30,4 @@ Falco is inspired by (and borrows elements from) some excellent open source proj
 - [django-twc-project](https://github.com/westerveltco/django-twc-project)
 - [saaspegasus](https://docs.saaspegasus.com/)
 
-
-For more details on the tools and packages included and the code structure, check out the [full documentation📚](https://fujin.oluwatobi.dev/en/latest/).
+For more details on the tools and packages included and the code structure, check out the [full documentation📚](https://template.falcoproject.com).

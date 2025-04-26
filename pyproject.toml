@@ -12,6 +12,7 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
 ]
+
 dependencies = [
   "myst-parser>=4",
   "shibuya>=2024.12.15",
@@ -22,7 +23,11 @@ dependencies = [
   "sphinx-docsearch>=0.1",
   "sphinx-tabs>=3.4.7",
   "sphinx-togglebutton>=0.3.2",
-  "falco-cli>=0.27.0a6",
+]
+
+[dependency-groups]
+dev = [
+  "falco-cli",
 ]
 
 [tool.bumpversion]
@@ -35,7 +40,7 @@ parse = """(?x)                     # Verbose mode
     )
     (?:\\.(?P<patch>\\d+))?         # .patch, optional
 """
-serialize = ["{release}.{patch}", "{release}"]
+serialize = [ "{release}.{patch}", "{release}" ]
 search = "{current_version}"
 replace = "{new_version}"
 regex = false
@@ -106,3 +111,6 @@ protect_breaking_commits = false
 filter_commits = false
 topo_order = false
 sort_commits = "newest"
+
+[tool.uv.sources]
+falco-cli = { path = "../falco-cli", editable = true }
