@@ -9,10 +9,12 @@ _default:
 # ----------------------------------------------------------------------
 
 # Bootstrap local development environment
+[group('deps')]
 @bootstrap:
     just install
 
 # Setup local environnment
+[group('deps')]
 setup:
     #!/usr/bin/env bash
     [ ! -d .git ] && git init && git add -A
@@ -25,18 +27,22 @@ setup:
     echo "DEBUG=True" >> .env
 
 # Install dependencies
+[group('deps')]
 @install:
     uv sync
 
 # Generate requirements.txt file
+[group('deps')]
 @lock *ARGS:
     uv export --no-emit-project --output-file=requirements.txt --no-dev {{ ARGS }}
 
 # Generate and upgrade dependencies
+[group('deps')]
 @upgrade:
     uv sync --upgrade
 
 # Clean up local development environment
+[group('deps')]
 @clean:
     rm -rf .venv
     rm -f .coverage.*
@@ -49,27 +55,33 @@ setup:
 # ----------------------------------------------------------------------
 
 # Run the test suite, generate code coverage, and export html report
+[group('test')]
 @coverage-html: test
     rm -rf htmlcov
     @uv run python -m coverage html --skip-covered --skip-empty
 
 # Run the test suite, generate code coverage, and print report to stdout
+[group('test')]
 coverage-report: test
     @uv run python -m coverage report
 
 # Run tests using pytest
+[group('test')]
 @test *ARGS:
     uv run coverage run -m pytest {{ ARGS }}
 
 # Run mypy on project
+[group('test')]
 @types:
     uv run python -m mypy .
 
 # Run the django deployment checks
+[group('test')]
 @deploy-checks:
     just dj check --deploy
 
 # Run continuous integration checks
+[group('test')]
 @runci:
     just types
     just test
@@ -81,39 +93,47 @@ coverage-report: test
 # ----------------------------------------------------------------------
 
 # Run a django management command
+[group('django')]
 @dj *COMMAND:
     uv run -m {% endraw %}{{ cookiecutter.project_name }}{% raw %} {{ COMMAND }}
 
 # Run the django development server
+[group('django')]
 @server ADDRESS="":
     just dj work {{ ADDRESS }}
 
 # Kill the django development server in case the process is running in the background
+[group('django')]
 @kill-server PORT="8000":
     lsof -i :{{ PORT }} -sTCP:LISTEN -t | xargs -t kill
 
 # Open a Django shell using django-extensions shell_plus command
+[group('django')]
 @shell:
     just dj shell_plus
 
 alias mm := makemigrations
 
 # Generate Django migrations
+[group('django')]
 @makemigrations *APPS:
     just dj makemigrations {{ APPS }}
 
 # Run Django migrations
+[group('django')]
 @migrate *ARGS:
     just dj migrate {{ ARGS }}
     just dj migrate --database tasks_db
 
 # Reset the database
+[group('django')]
 @reset-db:
     just dj reset_db --noinput
 
 alias su := createsuperuser
 
 # Quickly create a superuser with the provided credentials
+[group('django')]
 createsuperuser EMAIL="admin@localhost" PASSWORD="admin":
     #!/usr/bin/env bash
     set -euo pipefail
@@ -123,10 +143,12 @@ createsuperuser EMAIL="admin@localhost" PASSWORD="admin":
     just dj createsuperuser --noinput --email "{{ EMAIL }}"
 
 # Generate admin code for a django app
+@group('django')
 @admin APP:
     just dj admin_generator {{ APP }} | tail -n +2 > {% endraw %}{{ cookiecutter.project_name }}{% raw %}/{{ APP }}/admin.py
 
 # Collect static files
+[group('django')]
 @collectstatic:
     just dj tailwind --skip-checks build
     just dj collectstatic --no-input --skip-checks
@@ -136,10 +158,12 @@ createsuperuser EMAIL="admin@localhost" PASSWORD="admin":
 # ----------------------------------------------------------------------
 
 # Build documentation using Sphinx
+[group('docs')]
 @docs-build LOCATION="docs/_build/html":
     uv run --group docs sphinx-build docs {{ LOCATION }}
 
 # Serve documentation locally
+[group('docs')]
 @docs-serve:
     uv run --group docs sphinx-autobuild docs docs/_build/html --port 8001
 
@@ -148,10 +172,12 @@ createsuperuser EMAIL="admin@localhost" PASSWORD="admin":
 # ----------------------------------------------------------------------
 
 # Run pre-commit
+[group('lint')]
 @pre-commit *ARGS:
     uvx --with pre-commit-uv pre-commit {{ ARGS }}
 
 # Run all formatters
+[group('lint')]
 @fmt:
     just --fmt --unstable
     just pre-commit run ruff-format -a > /dev/null 2>&1 || true
@@ -160,6 +186,7 @@ createsuperuser EMAIL="admin@localhost" PASSWORD="admin":
     just pre-commit run djade -a  > /dev/null 2>&1 || true
 
 # Run pre-commit on all files
+[group('lint')]
 @lint:
     just pre-commit run --all-files
 
@@ -168,10 +195,12 @@ createsuperuser EMAIL="admin@localhost" PASSWORD="admin":
 # ----------------------------------------------------------------------
 
 # Generate changelog
+[group('build')]
 logchanges *ARGS:
     uvx git-cliff --output CHANGELOG.md {{ ARGS }}
 
 # Bump project version and update changelog
+[group('build')]
 bumpver VERSION:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -185,6 +214,7 @@ bumpver VERSION:
     git push && git push --tags
 
 # Build a binary distribution of the project using pyapp
+[group('build')]
 build-bin:
     #!/usr/bin/env bash
     current_version=$(uv run bump-my-version show current_version)
@@ -202,6 +232,7 @@ build-bin:
     mv dist/bin/pyapp "dist/bin/{% endraw %}{{ cookiecutter.project_name }}{% raw %}-${current_version}"
 
 # Build linux binary in docker
+[group('build')]
 build-linux-bin:
     mkdir dist || true
     docker build -t build-bin-container . -f deploy/Dockerfile.binary
@@ -210,6 +241,7 @@ build-linux-bin:
     docker rm -f final-build
 
 # Build docker image
+[group('build')]
 build-docker-image:
     #!/usr/bin/env bash
     set -euo pipefail
