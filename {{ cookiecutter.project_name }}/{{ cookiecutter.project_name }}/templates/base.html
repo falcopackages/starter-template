@@ -1,6 +1,7 @@
 {% raw %}{% load static %}
 {% load django_htmx %}
 {% load tailwind_cli %}
+  {% load django_browser_reload %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -14,8 +15,9 @@
     {% tailwind_css %}
     {% block css %}{% endblock css %}
     <script defer src="{% static 'vendors/htmx/htmx.min.js' %}"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script> <!-- replace with local copy for prod -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script> <!-- replace this with local copy for prod -->
     {% block javascript %}{% endblock javascript %}
+     {% django_browser_reload_script %}
   </head>
   <body class="{% block body_class %}{% endblock body_class %}" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
   {% block body %}

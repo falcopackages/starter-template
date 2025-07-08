@@ -144,3 +144,6 @@ dmypy.json
 
 # MacOs
 .DS_Store
+
+# Tailwind cli
+.django_tailwind_cli

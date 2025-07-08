@@ -3,6 +3,7 @@ from email.utils import parseaddr
 from pathlib import Path
 
 import sentry_sdk
+from contextlib import suppress
 from environs import Env
 from falco.sentry import sentry_profiles_sampler
 from falco.sentry import sentry_traces_sampler
@@ -10,6 +11,12 @@ from marshmallow.validate import Email
 from marshmallow.validate import OneOf
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
+
+with suppress(ImportError):
+    import django_stubs_ext
+    # Monkeypatching Django, so stubs will work for all generics,
+    # see: https://github.com/typeddjango/django-stubs
+    django_stubs_ext.monkeypatch()
 
 # 0. Setup
 # --------------------------------------------------------------------------------------------
@@ -23,7 +30,7 @@ env.read_env(Path(BASE_DIR, ".env").as_posix())
 
 # We should strive to only have two possible runtime scenarios: either `DEBUG`
 # is True or it is False. `DEBUG` should be only true in development, and
-# False when deployed, whether or not it's a production environment.
+# False when deployed, whether it's a production environment.
 DEBUG = env.bool("DEBUG", default=False)
 
 PROD = not DEBUG
@@ -54,7 +61,7 @@ if PROD:
         "OPTIONS": {"size_limit": 2 ** 30},  # 1 gigabyte
     }
 
-CSRF_COOKIE_SECURE = PROD
+CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=PROD)
 
 DATABASES = {
     "default": env.dj_db_url("DATABASE_URL", default="sqlite:///db.sqlite3"),
@@ -62,26 +69,35 @@ DATABASES = {
         "TASKS_DATABASE_URL", default="sqlite:///tasks_db.sqlite3"
     )
 }
-DATABASES["tasks_db"]["OPTIONS"] = {"transaction_mode": "EXCLUSIVE"}
-if PROD:
-    if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
-        # https://blog.pecar.me/sqlite-django-config
-        # https://blog.pecar.me/sqlite-prod
+# https://docs.djangoproject.com/en/dev/ref/databases/#database-is-locked-errors
+# DATABASES["tasks_db"]["OPTIONS"]["timeout"] = 5
+if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
+    # https://gcollazo.com/optimal-sqlite-settings-for-django/
+    DATABASES["default"]["OPTIONS"] = {
+        "transaction_mode": "IMMEDIATE",
+        "init_command": (
+            "PRAGMA foreign_keys=ON;"
+            "PRAGMA journal_mode = WAL;"
+            "PRAGMA synchronous = NORMAL;"
+            "PRAGMA busy_timeout = 5000;"
+            "PRAGMA temp_store = MEMORY;"
+            "PRAGMA mmap_size = 134217728;"
+            "PRAGMA journal_size_limit = 67108864;"
+            "PRAGMA cache_size = 2000;"
+        ),
+    }
+if DATABASES["default"]["ENGINE"] == "django.db.backends.postgresql":
+    DATABASES["default"]["ATOMIC_REQUESTS"] = True
+    if PROD and env.bool("ENABLE_PG_CONN_POOL", default=False):
         DATABASES["default"]["OPTIONS"] = {
-            "transaction_mode": "IMMEDIATE",
-            "init_command": """
-                PRAGMA journal_mode=WAL;
-                PRAGMA synchronous=NORMAL;
-                PRAGMA mmap_size = 134217728;
-                PRAGMA journal_size_limit = 27103364;
-                PRAGMA cache_size=2000;
-            """,
+            "pool": {
+                "min_size": env.int("PG_CONN_POOL_MIN_SIZE", default=2),
+                "max_size": env.int("PG_CONN_POOL_MAX_SIZE", default=4),
+                "timeout": env.int("PG_CONN_POOL_TIMEOUT", default=10),
+            }
         }
-    elif DATABASES["default"]["ENGINE"] == "django.db.backends.postgresql":
-        DATABASES["default"]["OPTIONS"] = {"pool": True}
-        DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
-DATABASE_ROUTERS = ["falco.db_routers.DBTaskRouter"]
+DATABASE_ROUTERS = ["{{ cookiecutter.project_name }}.core.db_routers.DBTaskRouter"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -197,8 +213,6 @@ MEDIA_URL = "/media/"
 # https://docs.djangoproject.com/en/dev/topics/http/middleware/
 # https://docs.djangoproject.com/en/dev/ref/middleware/#middleware-ordering
 MIDDLEWARE = [
-    # should be first
-    "django.middleware.cache.UpdateCacheMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     # order doesn't matter
@@ -211,14 +225,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
-    # should be last
-    "django.middleware.cache.FetchFromCacheMiddleware",
 ]
 if not PROD:
-    MIDDLEWARE.remove("django.middleware.cache.UpdateCacheMiddleware")
-    MIDDLEWARE.remove("django.middleware.cache.FetchFromCacheMiddleware")
-    MIDDLEWARE.append("django_browser_reload.middleware.BrowserReloadMiddleware")
-
     MIDDLEWARE.insert(
         MIDDLEWARE.index("django.middleware.common.CommonMiddleware") + 1,
         "debug_toolbar.middleware.DebugToolbarMiddleware",
@@ -228,9 +236,9 @@ ROOT_URLCONF = "{{ cookiecutter.project_name }}.urls"
 
 SECRET_KEY = env.str("SECRET_KEY", default="{{ cookiecutter.secret_key }}")
 
-SECURE_HSTS_INCLUDE_SUBDOMAINS = PROD
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool("SECURE_HSTS_INCLUDE_SUBDOMAINS", default=PROD)
 
-SECURE_HSTS_PRELOAD = PROD
+SECURE_HSTS_PRELOAD = env.bool("SECURE_HSTS_PRELOAD", default=PROD)
 
 # https://docs.djangoproject.com/en/dev/ref/middleware/#http-strict-transport-security
 # 2 minutes to start with, will increase as HSTS is tested
@@ -240,7 +248,7 @@ SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", default=60 * 2) if PROD els
 # https://noumenal.es/notes/til/django/csrf-trusted-origins/
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-SECURE_SSL_REDIRECT = PROD
+SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=PROD)
 
 SERVER_EMAIL = env.str(
     "SERVER_EMAIL",
@@ -363,11 +371,7 @@ ACCOUNT_LOGOUT_REDIRECT_URL = "account_login"
 
 ACCOUNT_SESSION_REMEMBER = True
 
-ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*"]
-
 ACCOUNT_UNIQUE_EMAIL = True
-
-ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*"]
 
 LOGIN_REDIRECT_URL = "home"
 
@@ -410,6 +414,9 @@ TASKS = {
         "OPTIONS": {"database": "tasks_db"},
     }
 }
+
+# django-tailwind-cli
+TAILWIND_CLI_VERSION = "4.1.11"
 
 # sentry
 if PROD and (SENTRY_DSN := env.url("SENTRY_DSN", default=None)):
