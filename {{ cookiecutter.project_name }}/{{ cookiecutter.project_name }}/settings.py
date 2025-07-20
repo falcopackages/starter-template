@@ -231,6 +231,7 @@ if not PROD:
         MIDDLEWARE.index("django.middleware.common.CommonMiddleware") + 1,
         "debug_toolbar.middleware.DebugToolbarMiddleware",
     )
+    MIDDLEWARE.append("django_browser_reload.middleware.BrowserReloadMiddleware")
 
 ROOT_URLCONF = "{{ cookiecutter.project_name }}.urls"
 
@@ -350,7 +351,7 @@ STATIC_ROOT = APPS_DIR / "staticfiles"
 
 STATIC_URL = "/static/"
 
-STATICFILES_DIRS = [APPS_DIR / "static"]
+STATICFILES_DIRS = [APPS_DIR / "static/dist"]
 
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
@@ -416,6 +417,7 @@ TASKS = {
 }
 
 # django-tailwind-cli
+TAILWIND_CLI_SRC_CSS = APPS_DIR / "static/src/css/source.css"
 TAILWIND_CLI_VERSION = "4.1.11"
 
 # sentry
