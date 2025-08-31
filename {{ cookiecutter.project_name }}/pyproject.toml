@@ -23,7 +23,6 @@ dependencies = [
   "django[argon2]>=5.1",
   "django-allauth[socialaccount]",
   "django-anymail[amazon-ses]",
-  "django-extensions",
   "django-health-check",
   "django-htmx",
   "django-lifecycle",
@@ -163,6 +162,7 @@ module = [
 
 [dependency-groups]
 dev = [
+  "django-extensions",
   "django-browser-reload",
   "django-debug-toolbar",
   "dj-notebook>=0.6.1",

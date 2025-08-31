@@ -21,6 +21,7 @@ setup:
     mv .rename_to_.github .github > /dev/null 2>&1 || true # needed when project was generated from github
     just bootstrap
     just pre-commit install --install-hooks
+    just pre-commit autoupdate
     just migrate
     just createsuperuser
     just lint > /dev/null 2>&1 || true
@@ -99,8 +100,9 @@ coverage-report: test
 
 # Run the django development server
 [group('django')]
-@server ADDRESS="":
-    just dj work {{ ADDRESS }}
+@serve *ARGS:
+    just dj migrate
+    uv run honcho -f Procfile.dev start {{ ARGS }}
 
 # Kill the django development server in case the process is running in the background
 [group('django')]

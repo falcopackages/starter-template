@@ -5,8 +5,6 @@ from pathlib import Path
 import sentry_sdk
 from contextlib import suppress
 from environs import Env
-from falco.sentry import sentry_profiles_sampler
-from falco.sentry import sentry_traces_sampler
 from marshmallow.validate import Email
 from marshmallow.validate import OneOf
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -132,7 +130,6 @@ THIRD_PARTY_APPS = [
     "allauth.socialaccount",
     "crispy_forms",
     "crispy_tailwind",
-    "django_extensions",
     "django_htmx",
     "django_litestream",
     "django_tailwind_cli",
@@ -156,6 +153,7 @@ LOCAL_APPS = [
 if not PROD:
     # Development only apps
     THIRD_PARTY_APPS = [
+        "django_extensions",
         "debug_toolbar",
         "whitenoise.runserver_nostatic",
         "django_browser_reload",
@@ -433,8 +431,6 @@ if PROD and (SENTRY_DSN := env.url("SENTRY_DSN", default=None)):
             DjangoIntegration(),
             LoggingIntegration(event_level=None, level=None),
         ],
-        traces_sampler=sentry_traces_sampler,
-        profiles_sampler=sentry_profiles_sampler,
         send_default_pii=True,
     )
 
@@ -442,3 +438,7 @@ if PROD and (SENTRY_DSN := env.url("SENTRY_DSN", default=None)):
 # -----------------------------------------------------------------------------------------------------
 
 ADMIN_URL = env.str("ADMIN_URL", default="admin/")
+DEFAULT_PAGE_SIZE = 20
+CACHE_TIME_FAVICON = 60 * 60 * 24  # one day
+CACHE_TIME_ROBOTS_TXT = CACHE_TIME_FAVICON
+CACHE_TIME_SECURITY_TXT = CACHE_TIME_FAVICON

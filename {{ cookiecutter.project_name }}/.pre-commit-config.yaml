@@ -61,6 +61,13 @@ repos:
 
   - repo: local
     hooks:
+      - id: django-migrations
+        name: Check django migrations
+        entry: just dj makemigrations --dry-run --check
+        language: system
+        types: [python]
+        pass_filenames: false
+
       - id: rustywind
         name: rustywind Tailwind CSS class linter
         language: node
