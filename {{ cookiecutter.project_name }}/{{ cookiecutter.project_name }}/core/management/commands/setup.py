@@ -12,7 +12,6 @@ class Command(BaseCommand):
 
     def handle(self, *_, **__):
         if use_litestream():
-            call_command("litestream", "--skip-checks", "init")
             call_command(
                 "litestream",
                 "--skip-checks",
