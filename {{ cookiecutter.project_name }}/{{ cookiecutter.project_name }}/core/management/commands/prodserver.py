@@ -31,15 +31,20 @@ class Command(BaseCommand):
             "wsgi",
             "{{ cookiecutter.project_name }}.wsgi:application",
         ]
+        granian_executable = Path(sys.executable).parent / "granian"
         if use_litestream():
             # Construct the Granian command as a single string for Litestream
             execute_granian = f"granian {' '.join(granian_args)}"
             call_command("litestream", "--skip-checks", "replicate", "-exec", execute_granian)
         else:
-            granian_executable = Path(sys.executable).parent / "granian"
             command = [str(granian_executable), *granian_args]
-            subprocess.run(command, check=False)
+            try:
+                subprocess.run(command, check=False)
+            except KeyboardInterrupt:
+                pass
 
 
 def use_litestream() -> bool:
-    return settings.DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3" and env.bool("USE_LITESTREAM", True)
+    return not settings.DEBUG and settings.DATABASES["default"][
+        "ENGINE"
+    ] == "django.db.backends.sqlite3" and env.bool("USE_LITESTREAM", True)

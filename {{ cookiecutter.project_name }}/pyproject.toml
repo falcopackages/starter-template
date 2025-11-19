@@ -1,8 +1,10 @@
 [build-system]
-build-backend = "hatchling.build"
-requires = [
-  "hatchling>=1.26.3",
-]
+build-backend = "uv_build"
+requires = [ "uv-build>=0.9.7,<0.10" ]
+
+[tool.uv.build-backend]
+module-name = "{{ cookiecutter.project_name }}"
+module-root = ""
 
 [project]
 name = "{{ cookiecutter.project_name }}"
@@ -10,11 +12,11 @@ version = "0.0.1"
 description = "{{ cookiecutter.description }}"
 readme = "README.md"
 authors = [{ name = "{{ cookiecutter.author_name }}", email = "{{ cookiecutter.author_email }}" }]
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
   "boto3",
@@ -31,7 +33,7 @@ dependencies = [
   "django-tailwind-cli",
   "django-template-partials",
   "django-unique-user-email",
-  "django-tasks", # remove when merged into django hopefully for 5.2
+  "django-tasks",
   "environs[django]",
   "falco-app",
   "falco-ui",
@@ -46,7 +48,7 @@ dependencies = [
 scripts.{{ cookiecutter.project_name }} = "{{ cookiecutter.project_name }}.__main__:main"
 
 [tool.ruff]
-target-version = "py312"
+target-version = "py313"
 
 # Same as Black.
 line-length = 88
@@ -176,7 +178,6 @@ dev = [
   "pytest-sugar",
   "pytest-xdist",
   "falco-cli>=0.27.0a6",
-  "honcho",
 ]
 docs = [
   "furo",

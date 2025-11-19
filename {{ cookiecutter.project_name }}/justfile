@@ -102,7 +102,7 @@ coverage-report: test
 [group('django')]
 @serve *ARGS:
     just dj migrate
-    uv run honcho -f Procfile.dev start {{ ARGS }}
+    uvx honcho -f Procfile.dev start {{ ARGS }}
 
 # Kill the django development server in case the process is running in the background
 [group('django')]
@@ -176,16 +176,16 @@ createsuperuser EMAIL="admin@localhost" PASSWORD="admin":
 # Run pre-commit
 [group('lint')]
 @pre-commit *ARGS:
-    uvx --with pre-commit-uv pre-commit {{ ARGS }}
+    uvx prek {{ ARGS }}
 
 # Run all formatters
 [group('lint')]
 @fmt:
     just --fmt --unstable
-    just pre-commit run ruff-format -a > /dev/null 2>&1 || true
-    just pre-commit run pyproject-fmt -a > /dev/null 2>&1 || true
-    just pre-commit run reorder-python-imports -a  > /dev/null 2>&1 || true
-    just pre-commit run djade -a  > /dev/null 2>&1 || true
+    just pre-commit run ruff-format -a
+    just pre-commit run pyproject-fmt -a
+    just pre-commit run reorder-python-imports -a
+    just pre-commit run djade -a
 
 # Run pre-commit on all files
 [group('lint')]
@@ -219,7 +219,7 @@ bumpver VERSION:
 [group('build')]
 build-bin:
     #!/usr/bin/env bash
-    current_version=$(uv run bump-my-version show current_version)
+    current_version=$(uvx bump-my-version show current_version)
     uv build
     export PYAPP_UV_ENABLED="1"
     export PYAPP_PYTHON_VERSION="3.12"
@@ -248,7 +248,7 @@ build-docker-image:
     #!/usr/bin/env bash
     set -euo pipefail
     export DEBUG="False"
-    current_version=$(uv run bump-my-version show current_version)
+    current_version=$(uvx bump-my-version show current_version)
     image_name="{% endraw %}{{ cookiecutter.project_name }}{% raw %}"
     just install
     docker build -t "${image_name}:${current_version}" -f deploy/Dockerfile .
