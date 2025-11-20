@@ -204,7 +204,7 @@ if DEBUG:
 
 ROOT_URLCONF = "test_project.urls"
 
-SECRET_KEY = env.str("SECRET_KEY", default="django-insecure-SMzgxbLBhHIMkdB21sFnn7Yx1c1k2iWkIaWdSG92rbs")
+SECRET_KEY = env.str("SECRET_KEY", default="django-insecure-TVk1WHWboNBRSONjOjcK-NuYyrww71GCwgR0IzsiIcA")
 
 SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
 

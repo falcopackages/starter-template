@@ -96,6 +96,7 @@ type = "pip-compile"
 pip-compile-constraint = "default"
 pip-compile-installer = "uv"
 pip-compile-resolver = "uv"
+pip-compile-hashes = false
 lock-filename = "requirements.txt"
 
 [tool.hatch.envs.dev]
@@ -128,7 +129,6 @@ extra-dependencies = [
   "sphinx-autobuild",
   "sphinx-copybutton",
   "sphinx-design",
-  "myst-parser",
 ]
 lock-filename = "docs/requirements.txt"
 

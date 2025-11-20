@@ -64,7 +64,7 @@ exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
 
 [tool.falco]
 htmx = "test_project/static/vendors/htmx/htmx.min.js:2.0.2"
-revision = "0773444ccc826770ef1949c3e1d97bb68f069db4"
+revision = "5b7d1b3c01a789d0587adac562a03bc3f8a7197c"
 skip = ["playground.ipynb", "README.md", "*/static/*"]
 blueprint = "."
 
@@ -100,6 +100,7 @@ type = "pip-compile"
 pip-compile-constraint = "default"
 pip-compile-installer = "uv"
 pip-compile-resolver = "uv"
+pip-compile-hashes = false
 lock-filename = "requirements.txt"
 
 [tool.hatch.envs.dev]
@@ -132,7 +133,6 @@ extra-dependencies = [
   "sphinx-autobuild",
   "sphinx-copybutton",
   "sphinx-design",
-  "myst-parser",
 ]
 lock-filename = "docs/requirements.txt"
 
