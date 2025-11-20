@@ -132,6 +132,6 @@ dmypy.json
 .idea/*
 .idea/sonarlint/
 
-
+test_project/
 test_projects/
 demo/
