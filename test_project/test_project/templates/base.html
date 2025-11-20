@@ -1,0 +1,50 @@
+{% load static %}
+{% load django_htmx %}
+{% load tailwind_cli %}
+{% load compress %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="htmx-config" content='{"globalViewTransitions": "true"}' />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+
+    {% block title %}
+      <title>Test_project</title>
+    {% endblock title %}
+
+    {% tailwind_css %}
+    {% compress css %}
+
+      {% block css %}
+      {% endblock css %}
+
+    {% endcompress css %}
+    <script defer src="{% static 'vendors/htmx/htmx.min.js' %}"></script>
+    {% compress js %}
+
+      {% block javascript %}
+      {% endblock javascript %}
+
+    {% endcompress js %}
+  </head>
+  <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    <main class="container mx-auto">
+
+      {% block content %}
+      {% endblock content %}
+
+    </main>
+
+    {% block modal %}
+    {% endblock modal %}
+
+    {% block inline_javascript %}
+    {% endblock inline_javascript %}
+
+    {% django_htmx_script %}
+  </body>
+</html>

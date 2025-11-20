@@ -1,0 +1,4 @@
+#!/command/with-contenv execlineb
+
+cd /app
+exec python test_project/__main__.py qcluster
