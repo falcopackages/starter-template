@@ -188,6 +188,12 @@ docs = [
   "myst-parser",
 ]
 
+[tool.uv.build-backend]
+module-name = "{{ cookiecutter.project_name }}"
+module-root = ""
+source-exclude = [ "media/**", "staticfiles" ]
+
+
 [tool.uv]
 default-groups = [ "dev", "docs" ]
 
