@@ -28,6 +28,7 @@ class Command(BaseCommand):
             "--host",
             options["host"],
             "--interface",
+            "--access-log",
             "wsgi",
             "{{ cookiecutter.project_name }}.wsgi:application",
         ]
