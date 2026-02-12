@@ -2,10 +2,6 @@
 build-backend = "uv_build"
 requires = [ "uv-build>=0.9.7,<0.10" ]
 
-[tool.uv.build-backend]
-module-name = "{{ cookiecutter.project_name }}"
-module-root = ""
-
 [project]
 name = "{{ cookiecutter.project_name }}"
 version = "0.0.1"
