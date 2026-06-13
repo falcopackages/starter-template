@@ -11,22 +11,8 @@
     <meta name="keywords" content="" />
     {% block title %}{% endraw %}<title>{{ cookiecutter.project_name | title }}</title>{% raw %}{% endblock title %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'django_cotton_ui/cotton-ui.css' %}">
-    <style>
-      :root {
-        --color-accent: var(--color-teal-500);
-        --color-accent-content: var(--color-teal-600);
-      }
-      .dark {
-        --color-accent: var(--color-teal-400);
-        --color-accent-content: var(--color-teal-300);
-      }
-    </style>
     {% block css %}{% endblock css %}
     <script defer src="{% static 'vendors/htmx/htmx.min.js' %}"></script>
-    <script defer src="{% static 'django_cotton_ui/cotton-ui.min.js' %}"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     {% block javascript %}{% endblock javascript %}
   </head>

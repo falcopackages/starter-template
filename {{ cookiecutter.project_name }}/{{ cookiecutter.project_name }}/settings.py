@@ -117,7 +117,6 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "axes",
     "django_cotton",
-    "django_cotton_ui",
     "django_htmx",
     "django_litestream",
     "django_tasks_db",

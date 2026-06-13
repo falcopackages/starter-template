@@ -3,8 +3,7 @@ HTMX and Cotton Components
 
 The project comes set up with django-cotton_ and htmx_ for when you need to add some
 interactivity to your web app. `django-cotton <https://django-cotton.com/>`_ enables reusable
-component-based templates, and `Cotton UI <https://django-cotton.com/ui/>`_ provides a pre-built
-component kit for faster UI development.
+component-based templates right in Django.
 
 .. admonition:: jetbrains extensions
     :class: tip dropdown
@@ -33,7 +32,7 @@ Let's look at a quick example:
    >
       {% csrf_token %}
       {{ form }}
-      <c-ui.button variant="primary" type="submit">Add Element</c-ui.button>
+      <button type="submit">Add Element</button>
    </form>
 
    {% endblock main %}

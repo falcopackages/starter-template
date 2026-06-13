@@ -16,7 +16,6 @@ Base Dependencies
 
 - `environs <https://github.com/sloria/environs>`_: Used for configuring settings via environment variables.
 - `django-axes <https://github.com/jazzband/django-axes>`_: Handles login attempt tracking and brute-force protection.
-- `django-cotton-ui <https://github.com/wrabit/django-cotton-ui>`_: Cotton UI Kit — an optional component kit built with Cotton for faster UI development.
 - `django-htmx <https://github.com/adamchainz/django-htmx>`_: Used for making AJAX requests and updating the DOM.
 - `django-lifecycle <https://github.com/rsinger86/django-lifecycle>`_: Provides an alternative to signals for hooking into your model's lifecycle.
 - `django-extensions <https://django-extensions.readthedocs.io/en/latest/>`_: Adds some useful management commands to Django, such as ``shell_plus`` and ``show_urls``.
