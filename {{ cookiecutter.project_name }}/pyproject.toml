@@ -17,10 +17,10 @@ classifiers = [
 dependencies = [
   "boto3",
   "diskcache",
-  "crispy-tailwind",
-  "django[argon2]>=5.1",
-  "django-allauth[socialaccount]",
+  "django[argon2]>=6.0",
   "django-anymail[amazon-ses]",
+  "django-axes[ipware]>=8",
+  "django-cotton>=2.6.1",
   "django-health-check",
   "django-htmx",
   "django-lifecycle",
@@ -29,10 +29,8 @@ dependencies = [
   "django-tailwind-cli",
   "django-template-partials",
   "django-unique-user-email",
-  "django-tasks",
+  "django-tasks-db",
   "environs[django]",
-  "falco-app",
-  "falco-ui",
   "granian",
   "heroicons[django]",
   "pillow",
@@ -146,7 +144,6 @@ plugins = [ "mypy_django_plugin.main" ]
 [[tool.mypy.overrides]]
 ignore_errors = true
 module = [
-  "allauth.*",
   "boto3.*",
   "botocore.*",
   "debug_toolbar.*",
@@ -173,7 +170,7 @@ dev = [
   "pytest-django",
   "pytest-sugar",
   "pytest-xdist",
-  "falco-cli>=0.27.0a6",
+  "falco-cli>=0.28.0",
 ]
 docs = [
   "furo",

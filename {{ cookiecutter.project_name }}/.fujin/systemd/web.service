@@ -1,0 +1,19 @@
+[Unit]
+Description={{ cookiecutter.project_name }} web
+After=network.target
+Wants={{setup}}
+After={{setup}}
+
+[Service]
+UMask=0002
+RuntimeDirectory={{ cookiecutter.project_name }}
+RuntimeDirectoryMode=0755
+ExecStartPre={{install_dir}}/.venv/bin/{{ cookiecutter.project_name }} setup
+ExecStart={{install_dir}}/.venv/bin/{{ cookiecutter.project_name }} prodserver --uds /run/{{ cookiecutter.project_name }}/web.sock
+ExecReload={{install_dir}}/.venv/bin/{{ cookiecutter.project_name }} setup
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+
+[Install]
+WantedBy=multi-user.target

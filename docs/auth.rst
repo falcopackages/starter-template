@@ -20,31 +20,28 @@ by default. To make a view public, you use the `@login_not_required <https://doc
 Login via email instead of username
 -----------------------------------
 
-The ``email`` field is configured as the login field using `django-allauth <https://github.com/pennersr/django-allauth>`_. The ``username`` field is still present
-but is not required for login. Allauth automatically fills it with the part of the email before the ``@`` symbol.
-More often then not when I create a new django project I need to use something other than the ``username`` field provided by django as the unique identifier of the user,
-and the ``username`` field just becomes an annoyance to deal with. It is also more common nowadays for modern web and mobile applications to rely on a unique identifier
-such as an email address or phone number instead of a username.
+The ``email`` field is configured as the login field using a custom ``EmailBackend`` in the ``accounts`` app.
+The ``User`` model still has a ``username`` field, but it is auto-generated from the email address on signup
+to minimize friction.
 
-.. important::
+Brute-force Protection
+----------------------
 
-    There is a small fix applied for allauth related to django-fastdev in the ``core/apps.py`` file. Make sure to read it in case you ever need to change it.
+`django-axes <https://github.com/jazzband/django-axes>`_ is enabled to track login attempts and block
+brute-force attacks. It's configured to track the client IP address in addition to the username.
+
+Password Reset
+--------------
+
+Standard Django password reset views are included in the ``accounts`` app. Password reset emails
+are sent via Amazon SES (in production) or the console (in development).
 
 .. admonition:: Custom user model
     :class: note dropdown
 
-     I also removed the ``first_name`` and ``last_name`` fields that are available by default on the Django ``User`` model. I don't always need them, and when I do, I generally have a separate ``Profile``
-     model to store users' personal informations, keeping the ``User`` model focused on authentication and authorization.
-     My reasoning for this is to avoid asking for unnecessary data (following the principle of `YAGNI <https://en.wikipedia.org/wiki/You_aren%27t_gonna_need_it>`_). A positive consequence of this approach
-     is that having less data on your users/customers increases the chances of being `GDPR compliant <https://gdpr.eu/compliance/>`_. You can always add these fields later if needed.
+     Falco does not ship with a custom user model. There are great resources on why this is often the best approach:
 
-     -- me, not so long ago
+     - https://noumenal.es/posts/django-unique-user-email/928/
+     - https://buttondown.com/carlton/archive/evolving-djangos-authuser/
 
-    Previously, this section of the docs contained the message above. Now, I take a simpler approach: Falco doesn't ship with a custom user model anymore, and I don't recommend having one for most people. There are
-    now even better resources I can link to that explain why this is better than I could ever do:
-
-    - https://noumenal.es/posts/django-unique-user-email/928/
-    - https://buttondown.com/carlton/archive/evolving-djangos-authuser/
-
-    If you need to save user data, a profile model is a better approach, and better field names are ``full_name`` and ``short_name``. For the reasoning behind this, check out
-    https://django-improved-user.readthedocs.io/en/latest/rationale.html
+     If you need to save user data, a profile model is a better approach, and better field names are ``full_name`` and ``short_name``.

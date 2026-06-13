@@ -125,7 +125,6 @@ alias mm := makemigrations
 [group('django')]
 @migrate *ARGS:
     just dj migrate {{ ARGS }}
-    just dj migrate --database tasks_db
 
 # Reset the database
 [group('django')]

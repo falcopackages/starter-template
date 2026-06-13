@@ -12,8 +12,6 @@ from sentry_sdk.integrations.logging import LoggingIntegration
 
 with suppress(ImportError):
     import django_stubs_ext
-    # Monkeypatching Django, so stubs will work for all generics,
-    # see: https://github.com/typeddjango/django-stubs
     django_stubs_ext.monkeypatch()
 
 # 0. Setup
@@ -26,16 +24,12 @@ APPS_DIR = BASE_DIR / "{{ cookiecutter.project_name }}"
 env = Env()
 env.read_env(Path(BASE_DIR, ".env").as_posix())
 
-# We should strive to only have two possible runtime scenarios: either `DEBUG`
-# is True or it is False. `DEBUG` should be only true in development, and
-# False when deployed, whether it's a production environment.
 DEBUG = env.bool("DEBUG", default=False)
 
 PROD = not DEBUG
 
 # 1. Django Core Settings
 # -----------------------------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/4.0/ref/settings/
 
 ALLOWED_HOSTS = env.list(
     "ALLOWED_HOSTS", default=["*"] if not PROD else ["localhost"], subcast=str
@@ -49,28 +43,26 @@ CACHES = {
     }
 }
 if PROD:
-    # https://grantjenks.com/docs/diskcache/tutorial.html#djangocache
     CACHES["default"] = {
         "BACKEND": "diskcache.DjangoCache",
         "LOCATION": env.str("CACHE_LOCATION", default=".diskcache"),
         "TIMEOUT": 300,
         "SHARDS": 8,
-        "DATABASE_TIMEOUT": 0.010,  # 10 milliseconds
-        "OPTIONS": {"size_limit": 2 ** 30},  # 1 gigabyte
+        "DATABASE_TIMEOUT": 0.010,
+        "OPTIONS": {"size_limit": 2 ** 30},
     }
 
 CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=PROD)
 
 DATABASES = {
-    "default": env.dj_db_url("DATABASE_URL", default="sqlite:///db.sqlite3"),
-    "tasks_db": env.dj_db_url(
-        "TASKS_DATABASE_URL", default="sqlite:///tasks_db.sqlite3"
-    )
+    "default": env.dj_db_url(
+        "DATABASE_URL",
+        default="sqlite:///db.sqlite3"
+        if "sqlite" in "{{ cookiecutter.database }}"
+        else "postgres://localhost/{{ cookiecutter.project_name }}"
+    ),
 }
-# https://docs.djangoproject.com/en/dev/ref/databases/#database-is-locked-errors
-# DATABASES["tasks_db"]["OPTIONS"]["timeout"] = 5
 if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
-    # https://gcollazo.com/optimal-sqlite-settings-for-django/
     DATABASES["default"]["OPTIONS"] = {
         "transaction_mode": "IMMEDIATE",
         "init_command": (
@@ -94,8 +86,6 @@ if DATABASES["default"]["ENGINE"] == "django.db.backends.postgresql":
                 "timeout": env.int("PG_CONN_POOL_TIMEOUT", default=10),
             }
         }
-
-DATABASE_ROUTERS = ["{{ cookiecutter.project_name }}.core.db_routers.DBTaskRouter"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -125,17 +115,13 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
-    "crispy_forms",
-    "crispy_tailwind",
+    "axes",
+    "django_cotton",
     "django_htmx",
     "django_litestream",
     "django_tailwind_cli",
-    "django_tasks",
-    "django_tasks.backends.database",
-    "falco",
+    "django_tasks_db",
+    "falco_cli",
     "health_check",
     "health_check.cache",
     "health_check.contrib.migrations",
@@ -147,18 +133,17 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
+    "{{ cookiecutter.project_name }}.accounts",
     "{{ cookiecutter.project_name }}.core",
 ]
 
 if not PROD:
-    # Development only apps
     THIRD_PARTY_APPS = [
         "django_extensions",
         "debug_toolbar",
         "whitenoise.runserver_nostatic",
         "django_browser_reload",
         "django_fastdev",
-        # "django_watchfiles", # currently not working when html files are changed
         *THIRD_PARTY_APPS,
     ]
 
@@ -208,12 +193,9 @@ MEDIA_ROOT = env.path("MEDIA_ROOT", default=APPS_DIR / "media")
 
 MEDIA_URL = "/media/"
 
-# https://docs.djangoproject.com/en/dev/topics/http/middleware/
-# https://docs.djangoproject.com/en/dev/ref/middleware/#middleware-ordering
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    # order doesn't matter
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -221,7 +203,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.LoginRequiredMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "allauth.account.middleware.AccountMiddleware",
+    "axes.middleware.AxesMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
 ]
 if not PROD:
@@ -239,12 +221,8 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool("SECURE_HSTS_INCLUDE_SUBDOMAINS", defa
 
 SECURE_HSTS_PRELOAD = env.bool("SECURE_HSTS_PRELOAD", default=PROD)
 
-# https://docs.djangoproject.com/en/dev/ref/middleware/#http-strict-transport-security
-# 2 minutes to start with, will increase as HSTS is tested
-# example of production value: 60 * 60 * 24 * 7 = 604800 (1 week)
 SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", default=60 * 2) if PROD else 0
 
-# https://noumenal.es/notes/til/django/csrf-trusted-origins/
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=PROD)
@@ -276,7 +254,6 @@ if PROD and env.bool("USE_S3", default=False):
         },
     }
 
-# https://nickjanetakis.com/blog/django-4-1-html-templates-are-cached-by-default-with-debug-true
 DEFAULT_LOADERS = [
     "django.template.loaders.filesystem.Loader",
     "django.template.loaders.app_directories.Loader",
@@ -321,10 +298,10 @@ WSGI_APPLICATION = "{{ cookiecutter.project_name }}.wsgi.application"
 # 2. Django Contrib Settings
 # -----------------------------------------------------------------------------------------------
 
-# django.contrib.auth
 AUTHENTICATION_BACKENDS = [
+    "axes.backends.AxesStandaloneBackend",
+    "{{ cookiecutter.project_name }}.accounts.backend.EmailBackend",
     "django.contrib.auth.backends.ModelBackend",
-    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -344,7 +321,6 @@ AUTH_PASSWORD_VALIDATORS = [
 if not PROD:
     AUTH_PASSWORD_VALIDATORS = []
 
-# django.contrib.staticfiles
 STATIC_ROOT = APPS_DIR / "staticfiles"
 
 STATIC_URL = "/static/"
@@ -359,20 +335,9 @@ STATICFILES_FINDERS = (
 # 3. Third Party Settings
 # -------------------------------------------------------------------------------------------------
 
-# django-allauth
-ACCOUNT_LOGIN_METHODS = {"email"}
-
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https" if PROD else "http"
-
-ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*"]
-
-ACCOUNT_LOGOUT_REDIRECT_URL = "account_login"
-
-ACCOUNT_SESSION_REMEMBER = True
-
-ACCOUNT_UNIQUE_EMAIL = True
-
-LOGIN_REDIRECT_URL = "home"
+# django-axes
+AXES_ENABLED = True
+AXES_USE_CLIENT_IP = True
 
 # django-anymail
 if PROD:
@@ -383,11 +348,6 @@ if PROD:
             "region_name": env.str("AWS_S3_REGION_NAME", default=None),
         }
     }
-
-# django-crispy-forms
-CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
-
-CRISPY_TEMPLATE_PACK = "tailwind"
 
 # django-debug-toolbar
 DEBUG_TOOLBAR_CONFIG = {
@@ -406,11 +366,10 @@ LITESTREAM = {
     "config_file": BASE_DIR / "litestream.yml",
 }
 
-# django-tasks
+# django-tasks-db — single database, no router
 TASKS = {
     "default": {
-        "BACKEND": "django_tasks.backends.database.DatabaseBackend",
-        "OPTIONS": {"database": "tasks_db"},
+        "BACKEND": "django_tasks_db.DatabaseBackend",
     }
 }
 
@@ -433,6 +392,11 @@ if PROD and (SENTRY_DSN := env.url("SENTRY_DSN", default=None)):
         ],
         send_default_pii=True,
     )
+
+# LOGIN/LOGOUT
+LOGIN_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "accounts:login"
+LOGIN_URL = "accounts:login"
 
 # 4. Project Settings
 # -----------------------------------------------------------------------------------------------------

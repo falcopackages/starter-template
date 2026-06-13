@@ -15,7 +15,7 @@ Base Dependencies
 -----------------
 
 - `environs <https://github.com/sloria/environs>`_: Used for configuring settings via environment variables.
-- `django-allauth <https://github.com/pennersr/django-allauth>`_: Handles login and signup processes.
+- `django-axes <https://github.com/jazzband/django-axes>`_: Handles login attempt tracking and brute-force protection.
 - `django-template-partials <https://github.com/carltongibson/django-template-partials>`_: Used for defining reusable fragments of HTML.
 - `django-htmx <https://github.com/adamchainz/django-htmx>`_: Used for making AJAX requests and updating the DOM.
 - `django-lifecycle <https://github.com/rsinger86/django-lifecycle>`_: Provides an alternative to signals for hooking into your model's lifecycle.
@@ -23,16 +23,16 @@ Base Dependencies
 - `django-extensions <https://django-extensions.readthedocs.io/en/latest/>`_: Adds some useful management commands to Django, such as ``shell_plus`` and ``show_urls``.
 - `django-anymail <https://github.com/anymail/django-anymail>`_: `Amazon SES <https://aws.amazon.com/ses/?nc1=h_ls>`_ is used for production email, facilitated by Anymail.
 - `django-unique-user-email <https://github.com/carltongibson/django-unique-user-email>`_: Adds a unique constraint to the email field of the Django ``User`` model.
-- `django-tasks <https://github.com/RealOrangeOne/django-tasks>`_: Backport for the official django backend task queue and scheduling solution, will be removed when merged into Django.
+- `django-tasks-db <https://github.com/RealOrangeOne/django-tasks>`_: Database-backed task queue and scheduling.
 - `django-litestream <https://github.com/Tobi-De/django-litestream/>`_: Provides SQLite replication and backup if you choose to use SQLite in production.
 - `django-storages <https://django-storages.readthedocs.io/en/latest/>`_: Used for storing media files on AWS S3.
 - `diskcache <https://github.com/grantjenks/python-diskcache>`_: A simple and fast cache solution based on ``sqlite3``, just add a ``LOCATION`` environnment folder for the cache location and you are good to go.
-- `falco-app <https://github.com/falcopackages/falco>`_: Provide the ``falco`` commands for CRUG generations, migrations, the ``work`` command an a few utilities.
-- `Docker <https://www.docker.com/>`_ and `s6-overlay <https://github.com/just-containers/s6-overlay>`_: Docker is configured for production, with s6-overlay enabling running both the web server process (``granian``) and the background worker process (``django-tasks``) within a single container.
+- `Docker <https://www.docker.com/>`_ and `s6-overlay <https://github.com/just-containers/s6-overlay>`_: Docker is configured for production, with s6-overlay enabling running both the web server process (``granian``) and the background worker process (``django-tasks-db``) within a single container.
 - `granian <https://github.com/emmett-framework/granian>`_: Used a the production web server.
 - `Sentry <https://sentry.io/welcome/>`_: Utilized for performance and error monitoring.
 - `Whitenoise <https://whitenoise.evans.io/en/latest/>`_: Used to serve static files.
 - `heroicons <https://heroicons.com/>`_: Easy access to `heroicons <https://heroicons.com/>`_ in your Django templates.
+- `django-cotton <https://github.com/wrabit/django-cotton>`_: Cotton components for reusable UI.
 
 Development-Only packages
 -------------------------
@@ -47,19 +47,12 @@ Development-Only packages
 - `pytest-sugar <https://github.com/Teemu/pytest-sugar>`_: Better looking pytest output.
 - `pytest-xdist <https://github.com/pytest-dev/pytest-xdist>`_: Run tests in parallel.
 - `Werkzeug <https://werkzeug.palletsprojects.com/en/2.1.x/>`_: Enable the Werkzeug debugger when running `manage.py runserver_plus`.
+- `falco-cli <https://github.com/falcopackages/falco-cli>`_: CLI for CRUD generation, project scaffolding, and Django utilities.
 
 CSS Frameworks
 --------------
 
-If you are using the default template, the following additional packages are included:
-
 - `django-tailwind-cli <https://github.com/oliverandrich/django-tailwind-cli>`_: Integration with tailwind css using the `Tailwind CSS CLI <https://tailwindcss.com/blog/standalone-cli>`_, eliminating the need for Node.js.
-- `crispy-tailwind <https://github.com/django-crispy-forms/crispy-tailwind>`_: Tailwind CSS Template pack for ``django-crispy-forms``.
-
-If you are using the Bootstrap template, the following additional packages are included:
-
-- `django-bootstrap5 <https://github.com/zostera/django-bootstrap5>`_: Integration with bootstrap 5 and provide some useful templates tags like ``bootstrap_messages`` to automatically render Django messages as bootstrap alerts.
-- `crispy-bootstrap5 <https://github.com/django-crispy-forms/crispy-bootstrap5>`_: Bootstrap 5 Template pack for ``django-crispy-forms``.
 
 Extra Tools
 -----------
@@ -84,20 +77,3 @@ Here's a list of extra packages I use from time to time that don't come included
 - `django-pgclone <https://github.com/Opus10/django-pgclone>`_
 - `django-perf-rec <https://github.com/adamchainz/django-perf-rec>`_
 - `coltrane <https://github.com/adamghill/coltrane>`_
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

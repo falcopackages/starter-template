@@ -23,6 +23,5 @@ class Command(BaseCommand):
         call_command("tailwind", "--skip-checks", "build")
         call_command("collectstatic", "--skip-checks", "--no-input")
         call_command("migrate", "--skip-checks")
-        call_command("migrate", "--skip-checks", "--database", "tasks_db")
         with suppress(CommandError):
             call_command("createsuperuser", "--skip-checks", "--noinput", "--traceback")

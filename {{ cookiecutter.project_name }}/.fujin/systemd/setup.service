@@ -1,0 +1,11 @@
+[Unit]
+Description={{ cookiecutter.project_name }} setup
+After=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart={{install_dir}}/.venv/bin/{{ cookiecutter.project_name }} setup
+
+[Install]
+WantedBy=multi-user.target

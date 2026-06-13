@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block navigation %}{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-[80vh]">
+  <div class="w-full max-w-md bg-white shadow rounded-lg p-8">
+    {% block account_content %}
+    {% endblock account_content %}
+  </div>
+</div>
+{% endblock content %}

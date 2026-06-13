@@ -1,0 +1,6 @@
+# Caddyfile for {{ cookiecutter.project_name }}
+# Learn more: https://caddyserver.com/docs/caddyfile
+
+{{ cookiecutter.project_name }}.com {
+    reverse_proxy unix//run/{{ cookiecutter.project_name }}/web.sock
+}

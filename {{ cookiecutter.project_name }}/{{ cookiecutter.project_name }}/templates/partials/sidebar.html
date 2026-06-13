@@ -1,0 +1,25 @@
+<!-- main_nav.html -->
+<ul class="space-y-2 bg-gray-100 p-4 w-64">
+  {% for item in items %}
+    <li>
+      <a href="{{ item.url }}"
+         class="block px-4 py-2 rounded hover:bg-gray-200 {% if item.active %}bg-gray-300 font-bold{% endif %}"
+         {% if item.baz %} data-baz="{{ item.baz }}"{% endif %}>
+        {{ item.title }}
+      </a>
+      {% if item.items %}
+        <ul class="ml-4 mt-2 space-y-1">
+          {% for subitem in item.items %}
+            <li>
+              <a href="{{ subitem.url }}"
+                 class="block px-3 py-1 rounded hover:bg-gray-200 text-sm {% if subitem.active %}bg-gray-300 font-semibold{% endif %}"
+                 {% if item.foo %} data-foo="{{ item.foo }}"{% endif %}>
+                {{ subitem.title }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>

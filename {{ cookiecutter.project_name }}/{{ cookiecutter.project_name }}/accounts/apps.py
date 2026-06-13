@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class CoreConfig(AppConfig):
+class AccountsConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "{{ cookiecutter.project_name }}.core"
+    name = "{{ cookiecutter.project_name }}.accounts"

@@ -1,4 +1,3 @@
-from allauth.account.decorators import secure_admin_login
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -11,9 +10,6 @@ from {{ cookiecutter.project_name }}.core.views import favicon
 from {{ cookiecutter.project_name }}.core.views import robots_txt
 from {{ cookiecutter.project_name }}.core.views import security_txt
 from health_check.views import MainView
-
-admin.autodiscover()
-admin.site.login = secure_admin_login(admin.site.login)
 
 urlpatterns = [
     path("android-chrome-192x192.png", favicon),
@@ -29,7 +25,7 @@ urlpatterns = [
     path("robots.txt", robots_txt),
     path("", login_not_required(TemplateView.as_view(template_name="index.html")), name="home"),
     path("health/", login_not_required(MainView.as_view())),
-    path("accounts/", include("allauth.urls")),
+    path("accounts/", include("{{ cookiecutter.project_name }}.accounts.urls")),
     path(settings.ADMIN_URL, admin.site.urls),
 ]
 

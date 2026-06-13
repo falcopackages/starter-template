@@ -3,5 +3,6 @@
   "author_name": "{{ cookiecutter.author_name }}",
   "author_email": "{{ cookiecutter.author_email }}",
   "secret_key": "{{ cookiecutter.secret_key }}",
-  "description": "{{ cookiecutter.description }}"
+  "description": "{{ cookiecutter.description }}",
+  "database": ["postgresql", "sqlite"]
 }

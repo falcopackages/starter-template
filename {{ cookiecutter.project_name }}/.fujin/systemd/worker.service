@@ -1,0 +1,11 @@
+[Unit]
+Description={{ cookiecutter.project_name }} worker
+Wants={{setup}}
+After={{setup}}
+After=network.target
+
+[Service]
+ExecStart={{install_dir}}/.venv/bin/{{ cookiecutter.project_name }} db_worker
+
+[Install]
+WantedBy=multi-user.target

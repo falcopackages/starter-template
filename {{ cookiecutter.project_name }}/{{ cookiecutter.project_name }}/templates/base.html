@@ -14,7 +14,7 @@
     {% tailwind_css %}
     {% block css %}{% endblock css %}
     <script defer src="{% static 'vendors/htmx/htmx.min.js' %}"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script> <!-- replace this with local copy for prod -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     {% block javascript %}{% endblock javascript %}
   </head>
   <body class="{% block body_class %}{% endblock body_class %}" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
@@ -43,7 +43,7 @@
           </div>
 
           <!-- Logout Button -->
-          <a href="{% url 'account_logout' %}"
+          <a href="{% url 'accounts:logout' %}"
              class="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700 transition duration-300">
             {% heroicon_outline "arrow-right-start-on-rectangle" %}
             <span>Logout</span>

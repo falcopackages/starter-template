@@ -1,0 +1,47 @@
+{% extends "accounts/base.html" %}
+{% load i18n %}
+
+{% block account_content %}
+<header>
+  <h2 class="text-2xl font-bold mb-2">{% translate "Sign In" %}</h2>
+  <p class="text-gray-600 mb-6">{% translate "Enter your credentials to access your account" %}</p>
+</header>
+<section>
+  {% if form.non_field_errors %}
+    <div class="mb-4 p-3 bg-red-100 text-red-700 rounded">
+      {{ form.non_field_errors }}
+    </div>
+  {% endif %}
+  <form id="login-form" method="post" action="{% url 'accounts:login' %}">
+    {% csrf_token %}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    <div class="space-y-4">
+      <div>
+        {{ form.email.label_tag }}
+        {{ form.email }}
+        {% if form.email.errors %}
+          <div class="text-sm text-red-600 mt-1">{{ form.email.errors }}</div>
+        {% endif %}
+      </div>
+      <div>
+        <div class="flex items-center justify-between">
+          {{ form.password.label_tag }}
+          <a href="{% url 'accounts:password_reset' %}" class="text-sm text-blue-600 hover:underline">{% translate "Forgot password?" %}</a>
+        </div>
+        {{ form.password }}
+        {% if form.password.errors %}
+          <div class="text-sm text-red-600 mt-1">{{ form.password.errors }}</div>
+        {% endif %}
+      </div>
+    </div>
+  </form>
+</section>
+<footer class="mt-6 space-y-4">
+  <button type="submit" form="login-form" class="w-full py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+    {% translate "Sign In" %}
+  </button>
+  <p class="text-sm text-center text-gray-600">
+    {% translate "Don't have an account?" %} <a href="{% url 'accounts:signup' %}" class="text-blue-600 hover:underline">{% translate "Sign up" %}</a>
+  </p>
+</footer>
+{% endblock account_content %}
