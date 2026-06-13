@@ -4,7 +4,7 @@
   "author_email": "{{ cookiecutter.author_email }}",
   "secret_key": "{{ cookiecutter.secret_key }}",
   "description": "{{ cookiecutter.description }}",
-  "database": ["postgresql", "sqlite"],
+  "use_postgres": false,
   "_copy_without_render": [
     "*.html",
     "*.dtl",

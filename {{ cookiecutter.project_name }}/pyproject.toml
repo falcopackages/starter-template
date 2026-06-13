@@ -21,20 +21,21 @@ dependencies = [
   "django-anymail[amazon-ses]",
   "django-axes[ipware]>=8",
   "django-cotton>=2.6.1",
-  "django-health-check<4",
+  "django-cotton-ui",
+
   "django-htmx",
   "django-lifecycle",
   "django-litestream",
   "django-storages[s3]",
-  "django-tailwind-cli",
-  "django-template-partials",
   "django-unique-user-email",
   "django-tasks-db",
   "environs[django]",
   "granian",
   "heroicons[django]",
   "pillow",
+{%- if cookiecutter.use_postgres %}
   "psycopg[binary,pool]",
+{%- endif %}
   "sentry-sdk",
   "whitenoise[brotli]",
 ]
@@ -170,6 +171,7 @@ dev = [
   "pytest-django",
   "pytest-sugar",
   "pytest-xdist",
+  "pytailwindcss>=0.3",
   "falco-cli>=0.28.0",
 ]
 docs = [

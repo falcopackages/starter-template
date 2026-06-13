@@ -1,11 +1,10 @@
-HTMX and Template partials
+HTMX and Cotton Components
 ==========================
 
-The project comes set up with django-template-partials_ and htmx_ for the times when you need to add some
-interactivity to your web app. The `interactive user interfaces guide <https://falco.oluwatobi.dev/guides/interactive_user_interfaces.html>`_ goes into more detail on this, but for a brief overview:
-
-* django-template-partials_ is used to define reusable fragments of HTML
-* htmx_'s job is to make requests to the backend, get a piece of HTML fragment in response, and patch the `DOM <https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction>`_ using it. Basically, htmx allows you to write declarative code to make `AJAX <https://www.w3schools.com/xml/ajax_intro.asp>`_ (Asynchronous JavaScript And XML) requests.
+The project comes set up with django-cotton_ and htmx_ for when you need to add some
+interactivity to your web app. `django-cotton <https://django-cotton.com/>`_ enables reusable
+component-based templates, and `Cotton UI <https://django-cotton.com/ui/>`_ provides a pre-built
+component kit for faster UI development.
 
 .. admonition:: jetbrains extensions
     :class: tip dropdown
@@ -18,15 +17,12 @@ Let's look at a quick example:
 .. code-block:: django
    :linenos:
    :caption: elements.html
-   :emphasize-lines: 4, 6, 11-13
 
 
    {% block main %}
    <ul id="element-list">
       {% for el in elements %}
-         {% partialdef element-partial inline=True %}
-            <li>{{ el }}</li>
-         {% endpartialdef %}
+         <li>{{ el }}</li>
       {% endfor %}
    </ul>
 
@@ -35,8 +31,9 @@ Let's look at a quick example:
    hx-target="#element-list"
    hx-swap="beforeend"
    >
-      <!-- Let's assume some form fields are defined here -->
-      <button type="submit">Submit</button>
+      {% csrf_token %}
+      {{ form }}
+      <c-ui.button variant="primary" type="submit">Add Element</c-ui.button>
    </form>
 
    {% endblock main %}
@@ -50,17 +47,13 @@ The complementary Django code on the backend would look something like this:
 .. code-block:: python
    :linenos:
    :caption: views.py
-   :emphasize-lines: 6
 
    def add_element(request):
       new_element = add_new_element(request.POST)
       if request.htmx:
-         return render(request, "myapp/elements.html#element-partial", {"el": new_element})
+         return render(request, "myapp/elements.html", {"elements": [new_element]})
       else:
          redirect("elements_list")
-
-The highlighted line showcases a syntax feature provided by django-template-partials_. It enables you to selectively
-choose the specific HTML fragment from the ``elements.html`` file that is enclosed within the ``partialdef`` tag with the name ``element-partial``.
 
 The ``htmx`` attribute on the ``request`` element is provided by django-htmx_, which is already configured in the project.
 
@@ -69,6 +62,6 @@ Although this might not seem particularly exciting, the `interactive user interf
 practical examples that demonstrate the extensive possibilities offered by this approach.
 
 
-.. _django-template-partials: https://github.com/carltongibson/django-template-partials
+.. _django-cotton: https://django-cotton.com/
 .. _htmx: https://htmx.org/
 .. _django-htmx: https://github.com/adamchainz/django-htmx

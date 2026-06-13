@@ -148,10 +148,25 @@ createsuperuser EMAIL="admin@localhost" PASSWORD="admin":
 @admin APP:
     just dj admin_generator {{ APP }} | tail -n +2 > {% endraw %}{{ cookiecutter.project_name }}{% raw %}/{{ APP }}/admin.py
 
+# Download Tailwind CSS CLI binary
+[group('django')]
+@tailwind-install:
+    uv run tailwindcss_install
+
+# Build Tailwind CSS
+[group('django')]
+@tailwind-build:
+    uv run tailwindcss -i {% endraw %}{{ cookiecutter.project_name }}{% raw %}/static/src/css/source.css -o {% endraw %}{{ cookiecutter.project_name }}{% raw %}/static/public/css/styles.css --minify
+
+# Watch Tailwind CSS for changes
+[group('django')]
+@tailwind-watch:
+    uv run tailwindcss -i {% endraw %}{{ cookiecutter.project_name }}{% raw %}/static/src/css/source.css -o {% endraw %}{{ cookiecutter.project_name }}{% raw %}/static/public/css/styles.css --watch
+
 # Collect static files
 [group('django')]
 @collectstatic:
-    just dj tailwind --skip-checks build
+    just tailwind-build
     just dj collectstatic --no-input --skip-checks
 
 # ----------------------------------------------------------------------

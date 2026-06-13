@@ -6,8 +6,11 @@ from typing import TYPE_CHECKING
 from django.conf import settings
 from django.contrib.auth.decorators import login_not_required
 from django.contrib.staticfiles import finders
+from django.core.cache import cache
+from django.db import connection
 from django.http import FileResponse
 from django.http import HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils import timezone
 from django.views.decorators.cache import cache_control
@@ -15,6 +18,40 @@ from django.views.decorators.http import require_GET
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
+
+
+@require_GET
+@login_not_required
+def health_check(request: HttpRequest) -> JsonResponse:
+    health: dict[str, str | dict[str, str]] = {
+        "status": "healthy",
+        "checks": {},
+    }
+    status_code = 200
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+        health["checks"]["database"] = "ok"
+    except Exception as e:
+        health["checks"]["database"] = f"error: {e}"
+        health["status"] = "unhealthy"
+        status_code = 503
+
+    try:
+        cache.set("health_check", "ok", 1)
+        if cache.get("health_check") == "ok":
+            health["checks"]["cache"] = "ok"
+        else:
+            health["checks"]["cache"] = "error: cache read failed"
+            health["status"] = "unhealthy"
+            status_code = 503
+    except Exception as e:
+        health["checks"]["cache"] = f"error: {e}"
+        health["status"] = "unhealthy"
+        status_code = 503
+
+    return JsonResponse(health, status=status_code)
 
 
 @require_GET

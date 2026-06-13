@@ -16,10 +16,9 @@ Base Dependencies
 
 - `environs <https://github.com/sloria/environs>`_: Used for configuring settings via environment variables.
 - `django-axes <https://github.com/jazzband/django-axes>`_: Handles login attempt tracking and brute-force protection.
-- `django-template-partials <https://github.com/carltongibson/django-template-partials>`_: Used for defining reusable fragments of HTML.
+- `django-cotton-ui <https://github.com/wrabit/django-cotton-ui>`_: Cotton UI Kit — an optional component kit built with Cotton for faster UI development.
 - `django-htmx <https://github.com/adamchainz/django-htmx>`_: Used for making AJAX requests and updating the DOM.
 - `django-lifecycle <https://github.com/rsinger86/django-lifecycle>`_: Provides an alternative to signals for hooking into your model's lifecycle.
-- `django-heath-check <https://github.com/revsys/django-health-check>`_: Provides a ``/health`` endpoint for application, database, storage, and other health checks.
 - `django-extensions <https://django-extensions.readthedocs.io/en/latest/>`_: Adds some useful management commands to Django, such as ``shell_plus`` and ``show_urls``.
 - `django-anymail <https://github.com/anymail/django-anymail>`_: `Amazon SES <https://aws.amazon.com/ses/?nc1=h_ls>`_ is used for production email, facilitated by Anymail.
 - `django-unique-user-email <https://github.com/carltongibson/django-unique-user-email>`_: Adds a unique constraint to the email field of the Django ``User`` model.
@@ -52,7 +51,7 @@ Development-Only packages
 CSS Frameworks
 --------------
 
-- `django-tailwind-cli <https://github.com/oliverandrich/django-tailwind-cli>`_: Integration with tailwind css using the `Tailwind CSS CLI <https://tailwindcss.com/blog/standalone-cli>`_, eliminating the need for Node.js.
+- `pytailwindcss <https://github.com/fabioz/pytailwindcss>`_: Python bindings for the `Tailwind CSS CLI <https://tailwindcss.com/blog/standalone-cli>`_, used to compile Tailwind CSS in development.
 
 Extra Tools
 -----------

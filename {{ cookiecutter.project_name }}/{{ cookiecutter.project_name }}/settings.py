@@ -57,9 +57,7 @@ CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=PROD)
 DATABASES = {
     "default": env.dj_db_url(
         "DATABASE_URL",
-        default="sqlite:///db.sqlite3"
-        if "sqlite" in "{{ cookiecutter.database }}"
-        else "postgres://localhost/{{ cookiecutter.project_name }}"
+        default={% if cookiecutter.use_postgres %}"postgres://localhost/{{ cookiecutter.project_name }}"{% else %}"sqlite:///db.sqlite3"{% endif %},
     ),
 }
 if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
@@ -76,6 +74,7 @@ if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
             "PRAGMA cache_size = 2000;"
         ),
     }
+{% if cookiecutter.use_postgres %}
 if DATABASES["default"]["ENGINE"] == "django.db.backends.postgresql":
     DATABASES["default"]["ATOMIC_REQUESTS"] = True
     if PROD and env.bool("ENABLE_PG_CONN_POOL", default=False):
@@ -86,6 +85,7 @@ if DATABASES["default"]["ENGINE"] == "django.db.backends.postgresql":
                 "timeout": env.int("PG_CONN_POOL_TIMEOUT", default=10),
             }
         }
+{% endif %}
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -117,18 +117,12 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "axes",
     "django_cotton",
+    "django_cotton_ui",
     "django_htmx",
     "django_litestream",
-    "django_tailwind_cli",
     "django_tasks_db",
     "falco_cli",
-    "health_check",
-    "health_check.cache",
-    "health_check.contrib.migrations",
-    "health_check.db",
-    "health_check.storage",
     "heroicons",
-    "template_partials",
     "unique_user_email",
 ]
 
@@ -273,16 +267,10 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
             ],
             "builtins": [
-                "template_partials.templatetags.partials",
                 "heroicons.templatetags.heroicons",
             ],
             "debug": DEBUG,
-            "loaders": [
-                (
-                    "template_partials.loader.Loader",
-                    DEFAULT_LOADERS if DEBUG else CACHED_LOADERS,
-                )
-            ],
+            "loaders": DEFAULT_LOADERS if DEBUG else CACHED_LOADERS,
         },
     },
 ]
@@ -372,10 +360,6 @@ TASKS = {
         "BACKEND": "django_tasks_db.DatabaseBackend",
     }
 }
-
-# django-tailwind-cli
-TAILWIND_CLI_SRC_CSS = APPS_DIR / "static/src/css/source.css"
-TAILWIND_CLI_VERSION = "4.1.11"
 
 # sentry
 if PROD and (SENTRY_DSN := env.url("SENTRY_DSN", default=None)):
