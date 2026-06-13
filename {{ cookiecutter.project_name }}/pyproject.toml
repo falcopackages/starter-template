@@ -21,7 +21,7 @@ dependencies = [
   "django-anymail[amazon-ses]",
   "django-axes[ipware]>=8",
   "django-cotton>=2.6.1",
-  "django-health-check",
+  "django-health-check<4",
   "django-htmx",
   "django-lifecycle",
   "django-litestream",
