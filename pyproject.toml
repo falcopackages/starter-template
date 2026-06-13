@@ -1,6 +1,6 @@
 [project]
 name = "falco-starter-template"
-version = "2024.12.21"
+version = "2024.12.22"
 description = "Falco project starter template"
 readme = "README.md"
 authors = [
@@ -31,7 +31,7 @@ dev = [
 ]
 
 [tool.bumpversion]
-current_version = "2024.12.21"
+current_version = "2024.12.22"
 parse = """(?x)                     # Verbose mode
     (?P<release>                    # The release part
         (?:[1-9][0-9]{3})\\.        # YYYY.
