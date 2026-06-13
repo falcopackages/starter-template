@@ -5,6 +5,7 @@
    :hidden:
 
    applications/index
+   deploy
    changelog
    
 -----

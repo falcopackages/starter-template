@@ -1,3 +1,4 @@
 web: just dj runserver 8000
+js: just js-watch
 tailwind: just tailwind-watch
 worker: just dj db_worker -v 3

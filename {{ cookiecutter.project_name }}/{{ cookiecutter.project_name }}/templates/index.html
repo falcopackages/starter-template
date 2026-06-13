@@ -1,48 +1,37 @@
 {% raw %}{% extends "base.html" %}
 
-  {% block body_class %}class=bg-slate-50{% endblock body_class %}
-{% block body %}
-  <!-- Navigation -->
-  <nav class="flex items-center p-4 shadow bg-white">
-    <a href="{% url 'home' %}" class="text-gray-700 hover:text-gray-900">{% endraw %}{{ cookiecutter.project_name | title }}{% raw %}</a>
-    <div class="ml-auto space-x-4">
-      <a href="{% url 'account_signup' %}"
-         class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Sign up</a>
-      <a href="{% url 'account_login' %}" class="text-blue-600 hover:text-blue-700">Login</a>
-    </div>
-  </nav>
+{% block title %}<title>{% endraw %}{{ cookiecutter.project_name|title }}{% raw %} &middot; Build Faster, Dream Bigger</title>{% endblock %}
 
-  <!-- Hero Section -->
-  <main class="container mx-auto p-4 py-12 md:py-24">
-    <div class="flex flex-col md:flex-row items-center gap-8">
-      <div class="w-full md:w-1/2 space-y-6 order-2 md:order-1">
-        <h1 class="text-4xl md:text-5xl font-bold text-gray-900">
-          Build Faster, Dream Bigger
-        </h1>
-        <p class="text-xl text-gray-600">
-          Your next great idea deserves the perfect foundation. Start building with confidence today.
-        </p>
-        <div class="flex gap-4">
-          <a href="{% url 'account_signup' %}" class="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700">
-            Create account
-          </a>
-          <a href="{% url 'account_login' %}"
-             class="px-6 py-3 border border-blue-600 text-blue-600 rounded hover:bg-blue-50">
-            Sign in
-          </a>
-        </div>
-      </div>
-      <div class="w-full md:w-1/2 order-1 md:order-2 mb-8 md:mb-0">
-        <div class="relative max-w-[150px] md:max-w-[250px] mx-auto">
-          <div class="absolute inset-0 bg-blue-600 rounded-full opacity-10 blur-3xl"></div>
-          <img
-            src="https://raw.githubusercontent.com/falcopackages/website/refs/heads/main/_static/falco-logo.svg"
-            alt="Falco Logo"
-            class="relative w-full h-auto"
-          />
-        </div>
-      </div>
+{% block content %}
+<div class="flex flex-col gap-8 items-center md:flex-row py-12 md:py-24">
+  <div class="w-full md:w-1/2 space-y-6">
+    <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
+      Build Faster, Dream Bigger
+    </h1>
+    <p class="text-xl text-muted-foreground">
+      Your next great idea deserves the perfect foundation. Start building with confidence today.
+    </p>
+    {% if not user.is_authenticated %}
+    <div class="flex gap-4">
+      <a href="{% url 'accounts:signup' %}" class="btn-primary btn-lg">Create account</a>
+      <a href="{% url 'accounts:login' %}" class="btn-outline btn-lg">Sign in</a>
     </div>
-  </main>
-{% endblock body %}
+    {% else %}
+    <div class="flex gap-4">
+      <a href="{% url 'dashboard' %}" class="btn-primary">Go to dashboard</a>
+    </div>
+    {% endif %}
+  </div>
+  <div class="w-full md:w-1/2">
+    <div class="relative mx-auto max-w-[150px] md:max-w-[250px]">
+      <div class="absolute inset-0 bg-primary rounded-full opacity-10 blur-3xl"></div>
+      <img
+        src="https://raw.githubusercontent.com/falcopackages/website/refs/heads/main/_static/falco-logo.svg"
+        alt="Falco Logo"
+        class="relative w-full h-auto"
+      />
+    </div>
+  </div>
+</div>
+{% endblock content %}
 {% endraw %}

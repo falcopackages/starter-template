@@ -6,9 +6,7 @@
   "description": "{{ cookiecutter.description }}",
   "use_postgres": false,
   "_copy_without_render": [
-    "*.html",
     "*.dtl",
-    "*.txt",
     ".fujin"
   ]
 }

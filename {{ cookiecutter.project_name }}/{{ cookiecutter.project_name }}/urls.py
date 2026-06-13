@@ -6,6 +6,7 @@ from django.urls import include
 from django.urls import path
 from django.views.generic import TemplateView
 from django.views import defaults as default_views
+from {{ cookiecutter.project_name }}.core.views import DashboardView
 from {{ cookiecutter.project_name }}.core.views import favicon
 from {{ cookiecutter.project_name }}.core.views import health_check
 from {{ cookiecutter.project_name }}.core.views import robots_txt
@@ -24,6 +25,7 @@ urlpatterns = [
     path(".well-known/security.txt", security_txt),
     path("robots.txt", robots_txt),
     path("", login_not_required(TemplateView.as_view(template_name="index.html")), name="home"),
+    path("dashboard/", DashboardView.as_view(), name="dashboard"),
     path("health/", health_check),
     path("accounts/", include("{{ cookiecutter.project_name }}.accounts.urls")),
     path(settings.ADMIN_URL, admin.site.urls),

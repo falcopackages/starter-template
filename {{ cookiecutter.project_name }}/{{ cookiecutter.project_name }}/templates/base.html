@@ -1,5 +1,4 @@
-{% raw %}{% load static %}
-{% load django_htmx %}
+{% raw %}{% load django_htmx static %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -9,72 +8,138 @@
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <meta name="description" content="" />
     <meta name="keywords" content="" />
-    {% block title %}{% endraw %}<title>{{ cookiecutter.project_name | title }}</title>{% raw %}{% endblock title %}
+    {% block title %}<title>{% endraw %}{{ cookiecutter.project_name|title }}{% raw %}</title>{% endblock %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    {% block css %}{% endblock css %}
-    <script defer src="{% static 'vendors/htmx/htmx.min.js' %}"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    {% block javascript %}{% endblock javascript %}
+    <script>
+      (() => {
+        try {
+          const stored = localStorage.getItem("themeMode");
+          if (stored ? stored === "dark" : matchMedia("(prefers-color-scheme: dark)").matches) {
+            document.documentElement.classList.add("dark");
+          }
+        } catch (_) {}
+      })();
+    </script>
+    {% block css %}{% endblock %}
+    {% block javascript %}{% endblock %}
   </head>
-  <body class="{% block body_class %}{% endblock body_class %}" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-  {% block body %}
-
-    {% block navigation %}
-    <nav class="bg-white shadow">
-      <div class="container mx-auto px-4">
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-between py-3 gap-4">
-          <!-- Logo and Brand -->
-          <a href="{% url 'home' %}" class="flex items-center gap-2">
-            <img
-              src="https://raw.githubusercontent.com/falcopackages/website/refs/heads/main/_static/falco-logo.svg"
-              alt="Logo"
-              class="w-8 h-8"
-            />
-            <span class="font-semibold text-xl">{% endraw %}{{ cookiecutter.project_name | title }}{% raw %}</span>
-          </a>
-
-          <!-- Main Menu -->
-          <div class="flex flex-wrap items-center gap-6">
-            <a href="#" class="flex items-center gap-2 text-gray-700 hover:text-blue-600">
-              {{% heroicon_micro "squares-2x2" %}
-              <span>App 1</span>
+  <body>
+    <div id="app-shell">
+      {% block body %}
+      <div class="min-h-screen bg-background">
+      {% block navigation %}
+      <header class="sticky top-0 z-40 bg-card/80 backdrop-blur-sm">
+        <div class="flex justify-between items-center px-6 h-14">
+          <div class="flex gap-8 items-center">
+            <a href="{% url 'home' %}" class="flex gap-2 items-center text-lg font-semibold">
+              <div class="flex justify-center items-center rounded-lg size-8 bg-primary">
+                {% heroicon_mini "home" size=18 class="text-primary-foreground" %}
+              </div>
+              <span>{% endraw %}{{ cookiecutter.project_name|title }}{% raw %}</span>
             </a>
+            {% if user.is_authenticated %}
+            <nav class="flex gap-1 items-center">
+              <a href="{% url 'dashboard' %}"
+                 class="flex gap-1.5 items-center py-1.5 px-3 text-sm transition-colors text-muted-foreground hover:text-foreground">
+                {% heroicon_outline "rectangle-stack" size=16 %}
+                Dashboard
+              </a>
+            </nav>
+            {% endif %}
           </div>
 
-          <!-- Logout Button -->
-          <a href="{% url 'accounts:logout' %}"
-             class="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700 transition duration-300">
-            {% heroicon_outline "arrow-right-start-on-rectangle" %}
-            <span>Logout</span>
-          </a>
-        </div>
-      </div>
-    </nav>
-  {% endblock navigation %}
+          <div class="flex gap-2 items-center">
+            <button type="button"
+                    aria-label="Toggle dark mode"
+                    onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                    class="btn-icon-ghost">
+              <span class="hidden dark:block">
+                {% heroicon_outline "sun" size=18 %}
+              </span>
+              <span class="block dark:hidden">
+                {% heroicon_outline "moon" size=18 %}
+              </span>
+            </button>
 
-    <main class="container mx-auto p-4">
-        {% for message in messages %}
-        <div
-        x-data="{ show: true }"
-        x-show="show"
-        x-transition
-        class="mb-4 p-4 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700{% elif message.tags == 'success' %}bg-green-100 text-green-700{% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-700{% else %}bg-blue-100 text-blue-700{% endif %}"
-        role="alert">
-        <div class="flex justify-between items-center">
-          <span>{{ message }}</span>
-          <button
-            @click="show = false"
-            class="ml-4 text-gray-500 hover:text-gray-800 focus:outline-none">
-            {% heroicon_outline "x-mark" %}
+            {% if user.is_authenticated %}
+            <div class="dropdown-menu">
+              <button type="button" aria-haspopup="menu" class="rounded-full focus:ring-2 focus:ring-offset-2 focus:outline-none focus:ring-ring">
+                <div class="bg-gradient-to-br rounded-full size-8 from-primary to-accent"></div>
+              </button>
+              <div data-popover aria-hidden="true" data-align="end">
+                <div role="menu">
+                  <div role="group">
+                    <div role="heading" class="truncate">@{{ user.get_full_name|default:user.username }}</div>
+                    <div role="menuitem" class="cursor-pointer" onclick="document.getElementById('logout-dialog').showModal()">
+                      {% heroicon_outline "arrow-right-start-on-rectangle" size=16 %}
+                      Log out
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% else %}
+            <a href="{% url 'accounts:login' %}" class="btn-outline">Log in</a>
+            <a href="{% url 'accounts:signup' %}" class="btn-primary">Sign up</a>
+            {% endif %}
+          </div>
+        </div>
+        <div class="border-b"></div>
+      </header>
+      {% endblock navigation %}
+
+      {% block messages %}
+      {% for message in messages %}
+        <div class="flex gap-3 items-start mx-auto mt-4 max-w-7xl px-6 py-3 rounded-lg border text-sm {% if message.tags == 'error' %}bg-destructive/10 border-destructive/30 text-destructive{% elif message.tags == 'success' %}bg-emerald-50 border-emerald-200 text-emerald-900 dark:bg-emerald-950/50 dark:border-emerald-900 dark:text-emerald-200{% elif message.tags == 'warning' %}bg-amber-50 border-amber-200 text-amber-900 dark:bg-amber-950/50 dark:border-amber-900 dark:text-amber-200{% else %}bg-blue-50 border-blue-200 text-blue-700{% endif %}" role="alert">
+          <span class="mt-0.5 shrink-0">
+            {% if message.tags == 'error' %}
+              {% heroicon_micro "exclamation-circle" size=16 %}
+            {% elif message.tags == 'success' %}
+              {% heroicon_micro "check-circle" size=16 %}
+            {% elif message.tags == 'warning' %}
+              {% heroicon_micro "exclamation-triangle" size=16 %}
+            {% else %}
+              {% heroicon_micro "information-circle" size=16 %}
+            {% endif %}
+          </span>
+          <span class="flex-1">{{ message }}</span>
+          <button type="button"
+                  onclick="event.preventDefault(); this.closest('[role=alert]').remove()"
+                  class="p-1 -m-1 rounded transition-colors shrink-0 dark:hover:bg-white/10 hover:bg-black/10"
+                  aria-label="Close">
+            {% heroicon_micro "x-mark" size=14 %}
           </button>
         </div>
+      {% endfor %}
+      {% endblock messages %}
+
+      <main class="p-4 mx-auto max-w-7xl sm:p-6">
+        {% block content %}
+        {% endblock content %}
+      </main>
+    </div>
+
+    {% if user.is_authenticated %}
+    <dialog id="logout-dialog" class="dialog" aria-labelledby="logout-dialog-title">
+      <div>
+        <header>
+          <h2 id="logout-dialog-title">Log out</h2>
+          <p>Are you sure you want to log out of your account?</p>
+        </header>
+        <footer class="grid grid-cols-2 gap-2 sm:flex">
+          <button type="button" class="w-full sm:w-auto btn-outline" onclick="document.getElementById('logout-dialog').close()">Cancel</button>
+          <form method="post" action="{% url 'accounts:logout' %}" class="contents sm:inline">
+            {% csrf_token %}
+            <button type="submit" class="w-full sm:w-auto btn-destructive">Log out</button>
+          </form>
+        </footer>
       </div>
-        {% endfor %}
-      {% block content %}
-      {% endblock content %}
-    </main>
+    </dialog>
+    {% endif %}
+    </div>
+    <script src="{% static 'js/app.js' %}"></script>
     {% django_htmx_script %}
+    {% endblock body %}
   </body>
-  {% endblock body %}
 </html>
 {% endraw %}

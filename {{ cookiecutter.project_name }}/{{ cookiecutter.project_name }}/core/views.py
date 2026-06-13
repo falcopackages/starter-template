@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_not_required
 from django.contrib.staticfiles import finders
 from django.core.cache import cache
@@ -15,6 +16,7 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.views.decorators.cache import cache_control
 from django.views.decorators.http import require_GET
+from django.views.generic import TemplateView
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
@@ -102,3 +104,12 @@ def favicon(request: HttpRequest) -> HttpResponse | FileResponse:
         ),
         content_type="image/svg+xml",
     )
+
+
+class DashboardView(TemplateView):
+    template_name = "dashboard.html"
+
+    def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
+        context["user_count"] = get_user_model().objects.count()
+        return context

@@ -1,0 +1,63 @@
+{% raw %}{% extends "base.html" %}
+
+{% block title %}<title>Dashboard &middot; {% endraw %}{{ cookiecutter.project_name|title }}{% raw %}</title>{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-8">
+  <header>
+    <h1 class="text-2xl font-bold tracking-tight">Dashboard</h1>
+    <p class="text-muted-foreground">Welcome back, {{ request.user.get_full_name|default:request.user.username }}.</p>
+  </header>
+
+  <!-- Stats Grid -->
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="card">
+      <header>
+        <p class="text-muted-foreground text-sm">Total Users</p>
+        <h2 class="text-3xl font-bold">{{ user_count }}</h2>
+      </header>
+    </div>
+    <div class="card">
+      <header>
+        <p class="text-muted-foreground text-sm">Active Today</p>
+        <h2 class="text-3xl font-bold">&mdash;</h2>
+      </header>
+    </div>
+    <div class="card">
+      <header>
+        <p class="text-muted-foreground text-sm">Projects</p>
+        <h2 class="text-3xl font-bold">&mdash;</h2>
+      </header>
+    </div>
+  </div>
+
+  <!-- Getting Started -->
+  <section class="card">
+    <header>
+      <h2>Getting Started</h2>
+      <p>Your project is ready. Here are some next steps:</p>
+    </header>
+    <section>
+      <ul class="flex flex-col gap-3 list-inside">
+        <li class="flex gap-3 items-center text-sm">
+          <span class="badge-primary size-6 rounded-full flex items-center justify-center text-xs">1</span>
+          <span>Define your models in <code class="bg-muted px-1 py-0.5 rounded text-xs">{% endraw %}{{ cookiecutter.project_name }}{% raw %}/core/models.py</code></span>
+        </li>
+        <li class="flex gap-3 items-center text-sm">
+          <span class="badge-primary size-6 rounded-full flex items-center justify-center text-xs">2</span>
+          <span>Create views and templates for your pages</span>
+        </li>
+        <li class="flex gap-3 items-center text-sm">
+          <span class="badge-primary size-6 rounded-full flex items-center justify-center text-xs">3</span>
+          <span>Add tests in <code class="bg-muted px-1 py-0.5 rounded text-xs">tests/</code></span>
+        </li>
+        <li class="flex gap-3 items-center text-sm">
+          <span class="badge-primary size-6 rounded-full flex items-center justify-center text-xs">4</span>
+          <span>Deploy with <code class="bg-muted px-1 py-0.5 rounded text-xs">just deploy</code></span>
+        </li>
+      </ul>
+    </section>
+  </section>
+</div>
+{% endblock content %}
+{% endraw %}

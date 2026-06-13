@@ -12,6 +12,8 @@ _default:
 [group('deps')]
 @bootstrap:
     just install
+    just tailwind-install
+    just esbuild-install
 
 # Setup local environnment
 [group('deps')]
@@ -90,6 +92,45 @@ coverage-report: test
     just collectstatic
 
 # ----------------------------------------------------------------------
+# STATIC ASSETS
+# ----------------------------------------------------------------------
+
+ESBUILD_VERSION := "0.28.0"
+ESBUILD_BIN := "./bin/esbuild-" + ESBUILD_VERSION
+JS_ENTRY := "{% endraw %}{{ cookiecutter.project_name }}{% raw %}/static/src/js/app.js"
+JS_OUTPUT := "{% endraw %}{{ cookiecutter.project_name }}{% raw %}/static/public/js/app.js"
+TAILWIND_INPUT := "{% endraw %}{{ cookiecutter.project_name }}{% raw %}/static/src/css/source.css"
+TAILWIND_OUTPUT := "{% endraw %}{{ cookiecutter.project_name }}{% raw %}/static/public/css/styles.css"
+
+# Install esbuild CLI (standalone binary)
+[group('static')]
+@esbuild-install:
+    test -x {{ ESBUILD_BIN }} || python3 scripts/install_esbuild.py {{ ESBUILD_VERSION }}
+
+# Bundle local JavaScript assets for production
+[group('static')]
+@js-build:
+    just esbuild-install
+    {{ ESBUILD_BIN }} {{ JS_ENTRY }} --bundle --format=iife --target=es2020 --minify --sourcemap --outfile={{ JS_OUTPUT }}
+
+# Watch local JavaScript assets for development
+[group('static')]
+@js-watch:
+    just esbuild-install
+    {{ ESBUILD_BIN }} {{ JS_ENTRY }} --bundle --format=iife --target=es2020 --sourcemap --outfile={{ JS_OUTPUT }} --watch=forever
+
+# Build local JavaScript assets
+[group('static')]
+@static-js:
+    just js-build
+
+# Build all static assets (CSS + JS)
+[group('static')]
+@static-build:
+    just static-js
+    just tailwind-build
+
+# ----------------------------------------------------------------------
 # DJANGO
 # ----------------------------------------------------------------------
 
@@ -148,25 +189,25 @@ createsuperuser EMAIL="admin@localhost" PASSWORD="admin":
 @admin APP:
     just dj admin_generator {{ APP }} | tail -n +2 > {% endraw %}{{ cookiecutter.project_name }}{% raw %}/{{ APP }}/admin.py
 
-# Download Tailwind CSS CLI binary
-[group('django')]
+# Install tailwind CLI
+[group('tailwind')]
 @tailwind-install:
     uv run tailwindcss_install
 
-# Build Tailwind CSS
-[group('django')]
+# Build tailwind CSS for production
+[group('tailwind')]
 @tailwind-build:
-    uv run tailwindcss -i {% endraw %}{{ cookiecutter.project_name }}{% raw %}/static/src/css/source.css -o {% endraw %}{{ cookiecutter.project_name }}{% raw %}/static/public/css/styles.css --minify
+    uv run tailwindcss -i {{ TAILWIND_INPUT }} -o {{ TAILWIND_OUTPUT }} --minify
 
-# Watch Tailwind CSS for changes
-[group('django')]
+# Watch tailwind CSS for development
+[group('tailwind')]
 @tailwind-watch:
-    uv run tailwindcss -i {% endraw %}{{ cookiecutter.project_name }}{% raw %}/static/src/css/source.css -o {% endraw %}{{ cookiecutter.project_name }}{% raw %}/static/public/css/styles.css --watch
+    uv run tailwindcss -i {{ TAILWIND_INPUT }} -o {{ TAILWIND_OUTPUT }} --watch
 
 # Collect static files
 [group('django')]
 @collectstatic:
-    just tailwind-build
+    just static-build
     just dj collectstatic --no-input --skip-checks
 
 # ----------------------------------------------------------------------

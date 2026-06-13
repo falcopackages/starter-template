@@ -148,3 +148,7 @@ dmypy.json
 
 # Tailwind
 tailwindcss
+
+# esbuild
+esbuild-*
+bin/

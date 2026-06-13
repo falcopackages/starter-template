@@ -120,7 +120,6 @@ THIRD_PARTY_APPS = [
     "django_htmx",
     "django_litestream",
     "django_tasks_db",
-    "falco_cli",
     "heroicons",
     "unique_user_email",
 ]
@@ -137,6 +136,7 @@ if not PROD:
         "whitenoise.runserver_nostatic",
         "django_browser_reload",
         "django_fastdev",
+        "falco_cli",
         *THIRD_PARTY_APPS,
     ]
 
@@ -350,7 +350,16 @@ DEBUG_TOOLBAR_CONFIG = {
 
 # django-litestream
 LITESTREAM = {
-    "config_file": BASE_DIR / "litestream.yml",
+    "access-key-id": "$LITESTREAM_ACCESS_KEY_ID",
+    "secret-access-key": "$LITESTREAM_SECRET_ACCESS_KEY",
+    "dbs": [
+        {
+            "path": "$LITESTREAM_DB_PATH",
+            "replicas": [
+                {"url": "$LITESTREAM_REPLICA_URL"},
+            ],
+        },
+    ],
 }
 
 # django-tasks-db — single database, no router
