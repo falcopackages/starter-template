@@ -5,15 +5,9 @@ requirements = "requirements.txt"
 installation_mode = "python-package"
 python_version = "3.13"
 
-[secrets]
-adapter = "env"
-
-[secrets.options]
-source = "FUJIN_SECRETS"
-
 [[hosts]]
-user = "tobi"
-address = "dotnet"
+user = "user"
+address = "example.com"
 env = """
 ALLOWED_HOSTS={{ cookiecutter.project_name }}.example.com
 DEBUG=False

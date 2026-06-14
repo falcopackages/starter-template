@@ -28,19 +28,6 @@ docs/static/src/
 | `just static-build` | Build all assets (CSS + JS) |
 | `just collectstatic` | Build assets + run `collectstatic` |
 
-### Development
-
-The `Procfile.dev` starts both watchers:
-
-```
-web: just dj runserver 8000
-js: just js-watch
-tailwind: just tailwind-watch
-worker: just dj db_worker -v 3
-```
-
-Run with `uvx honcho -f Procfile.dev start`.
-
 ### Production
 
 `just collectstatic` handles the full pipeline:
