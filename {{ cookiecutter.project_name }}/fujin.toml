@@ -1,0 +1,53 @@
+app = "{{ cookiecutter.project_name | lower | replace(' ', '-') }}"
+build_command = "just static-build && uv build && just lock"
+distfile = "dist/{{ cookiecutter.project_name }}-{version}-py3-none-any.whl"
+requirements = "requirements.txt"
+installation_mode = "python-package"
+python_version = "3.13"
+
+[secrets]
+adapter = "env"
+
+[secrets.options]
+source = "FUJIN_SECRETS"
+
+[[hosts]]
+user = "tobi"
+address = "dotnet"
+env = """
+ALLOWED_HOSTS={{ cookiecutter.project_name }}.example.com
+DEBUG=False
+DEFAULT_FROM_EMAIL={{ cookiecutter.author_email }}
+DJANGO_SUPERUSER_EMAIL={{ cookiecutter.author_email }}
+DJANGO_SUPERUSER_USERNAME={{ cookiecutter.author_name | lower | replace(' ', '_') }}
+STATIC_ROOT={app_dir}/staticfiles
+MEDIA_ROOT={app_dir}/media
+CACHE_LOCATION={app_dir}/.diskcache
+
+ADMIN_URL=$ADMIN_URL
+SECRET_KEY=$SECRET_KEY
+DJANGO_SUPERUSER_PASSWORD=$DJANGO_SUPERUSER_PASSWORD
+AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+AWS_S3_REGION_NAME="ap-south-1"
+LITESTREAM_REPLICA_URL=$LITESTREAM_REPLICA_URL
+"""
+
+[aliases]
+console = "app exec shell"
+dbconsole = "app exec dbshell"
+print_settings = "app exec print_settings"
+shell = "app exec shell"
+caddy-logs = "server exec 'sudo journalctl -u caddy -f'"
+app-logs = "server exec exec 'sudo tail -F /var/log/caddy/{{ cookiecutter.project_name }}.log | grc jq'"
+
+[hooks]
+post_install = [
+    "{install_dir}/.venv/bin/{{ cookiecutter.project_name }} setup",
+]
+post_start = [
+    "curl -fsS -m 10 -H \"Title: {{ cookiecutter.project_name }} deployed\" -d \"{{ cookiecutter.project_name }} v{version} deployed successfully\" https://ntfy.example.com/topic",
+]
+
+[replicas]
+worker = 1

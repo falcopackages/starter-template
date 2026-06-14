@@ -1,0 +1,29 @@
+<c-vars page />
+
+{% if page.paginator.num_pages > 1 %}
+<nav class="flex justify-center py-4">
+  <ul class="flex gap-1 items-center">
+    {% if page.has_previous %}
+    <li>
+      <a class="btn-sm-outline" href="{% querystring page=page.previous_page_number %}">
+        {% heroicon_micro "chevron-left" size=14 %}
+      </a>
+    </li>
+    {% endif %}
+    {% for num in page.paginator.page_range %}
+      {% if page.number == num %}
+        <li><a class="btn-sm" href="{% querystring page=num %}">{{ num }}</a></li>
+      {% elif num > page.number|add:"-3" and num < page.number|add:"3" %}
+        <li><a class="btn-sm-outline" href="{% querystring page=num %}">{{ num }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if page.has_next %}
+    <li>
+      <a class="btn-sm-outline" href="{% querystring page=page.next_page_number %}">
+        {% heroicon_micro "chevron-right" size=14 %}
+      </a>
+    </li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}

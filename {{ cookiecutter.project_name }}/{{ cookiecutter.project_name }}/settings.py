@@ -45,7 +45,7 @@ CACHES = {
 if PROD:
     CACHES["default"] = {
         "BACKEND": "diskcache.DjangoCache",
-        "LOCATION": env.str("CACHE_LOCATION", default=".diskcache"),
+        "LOCATION": env.path("CACHE_LOCATION", default=BASE_DIR / ".diskcache"),
         "TIMEOUT": 300,
         "SHARDS": 8,
         "DATABASE_TIMEOUT": 0.010,
