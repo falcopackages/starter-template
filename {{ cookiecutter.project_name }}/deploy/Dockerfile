@@ -21,7 +21,7 @@ FROM python-base as builder-base
 # Install system deps & dependencies
 WORKDIR $PYSETUP_PATH
 COPY ./requirements.txt ./
-RUN apt-get update && apt-get install -y build-essential xz-utils --no-install-recommends \
+RUN apt-get update && apt-get install -y build-essential libffi-dev libjpeg-dev zlib1g-dev rustc cargo xz-utils --no-install-recommends \
  && pip install --upgrade pip uv \
  && python -m uv venv $VENV_PATH && uv pip install -r requirements.txt
 ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz /tmp
