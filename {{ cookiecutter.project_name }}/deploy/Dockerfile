@@ -18,14 +18,12 @@ ENV PATH="$VENV_PATH/bin:$PATH"
 # Stage 2: Install dependencies & build static files
 FROM python-base as builder-base
 
-# Install dependencies
+# Install system deps & dependencies
 WORKDIR $PYSETUP_PATH
 COPY ./requirements.txt ./
-RUN pip install --upgrade pip uv \
+RUN apt-get update && apt-get install -y build-essential xz-utils --no-install-recommends \
+ && pip install --upgrade pip uv \
  && python -m uv venv $VENV_PATH && uv pip install -r requirements.txt
-
-# Install s6-overlay
-RUN apt-get update && apt-get install -y xz-utils --no-install-recommends
 ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz /tmp
 ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-x86_64.tar.xz /tmp
 RUN mkdir /s6-install
